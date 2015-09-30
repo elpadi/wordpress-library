@@ -1,11 +1,12 @@
 <?php
 defined('ABSPATH') || exit;
 
-class App implements SingletonInterface, ImagesInterface, GridInterface, TilesInterface, PaginationInterface {
+class App implements SingletonInterface, ImagesInterface, GridInterface, TilesInterface, PaginationInterface, PostQueriesInterface {
 	use SingletonTrait;
 	use PostsTrait;
 	use PostTypesTrait;
 	use PaginationTrait;
+	use PostQueriesTrait;
 	use ImagesTrait;
 	use GridTrait;
 	use TilesTrait;
