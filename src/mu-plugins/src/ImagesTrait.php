@@ -79,6 +79,10 @@ trait ImagesTrait {
 			trigger_error("Post image not loaded for ID $post_id.", E_USER_WARNING);
 			return '';
 		}
+		return $this->responsiveAttachedImage($thumb_data, $classes);
+	}
+
+	public function responsiveAttachedImage($thumb_data, $classes=array()) {
 		return $this->createResponsiveImage($this->getResponsiveAttributesFromAttachment($thumb_data), $classes);
 	}
 

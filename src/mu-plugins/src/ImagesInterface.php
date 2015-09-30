@@ -7,5 +7,9 @@ interface ImagesInterface {
 	public static function blankSrc();
 	public function getResponsiveWidths();
 	public function acfSlideshow($field_name, $post_id=0, $titles_are_links=false, $is_fullscreen=true);
+	public function acfGallery($name, $print=true, $gallery_title='');
+	public function acfResponsiveImage($field_name_or_field, $post_id=0, $classes=array());
+	public function responsiveFeaturedImage($post_id=0, $classes=array());
+	public function responsiveAttachedImage($thumb_data, $classes=array());
 
 }
