@@ -2,6 +2,6 @@
 
 interface SingletonInterface {
 	
-	public function instance();
+	public static function instance();
 
 }
