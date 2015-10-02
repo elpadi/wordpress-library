@@ -18,7 +18,7 @@ trait SiteTrait {
 	}
 
 	public function postsDropdownField($post_type, $name, $value) {
-		$posts = get_posts(['post_type' => self::prefix($post_type), 'posts_per_page' => -1]);
+		$galleries = get_posts(['post_type' => self::prefix($post_type), 'posts_per_page' => -1]);
 		$options = array_combine(F\pluck($galleries, 'post_name'), F\pluck($galleries, 'post_title'));
 		include(MU_PLUGIN_BASE_DIR.'/templates/form-options.php');
 	}
