@@ -1,4 +1,5 @@
 <?php
+use Functional as F;
 
 trait SiteTrait {
 
@@ -15,6 +16,19 @@ trait SiteTrait {
 	}
 	
 	public function theme_init() {
+	}
+
+	public function acfSelectOptions($group_name, $field_name) {
+		$settings = get_posts(['name' => "acf_$group_name", 'post_type' => 'acf']);
+		if (!count($settings)) return [];
+		$field_meta = F\select(F\pluck(get_post_meta($settings[0]->ID), 0), function($val, $key) use ($field_name) {
+			return strpos($key, 'field_') === 0
+				&& ($data = unserialize($val))
+				&& $data['name'] === $field_name;
+		});
+		if (!count($field_meta)) return [];
+		$data = unserialize(reset($field_meta));
+		return $data['choices'];
 	}
 
 	public function postsDropdownField($post_type, $name, $value) {
