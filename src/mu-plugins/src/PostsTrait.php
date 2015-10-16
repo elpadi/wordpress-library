@@ -21,9 +21,9 @@ trait PostsTrait {
 		return ob_get_clean();
 	}
 
-	public function getChildPages($id=0) {
+	public function getChildPages($id=0, $args=array()) {
 		if (!$id) $id = get_the_ID();
-		return get_posts(['post_type' => 'page', 'post_parent' => $id, 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC']);
+		return get_posts(array_merge(['post_type' => 'page', 'post_parent' => $id, 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC'], $args));
 	}
 
 }

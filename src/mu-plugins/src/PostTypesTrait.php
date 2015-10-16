@@ -2,6 +2,10 @@
 
 trait PostTypesTrait {
 	
+	public static function postTypeURL($slug) {
+		return get_post_type_archive_link(self::prefix($slug));
+	}
+
 	protected function registerPostType($slug, $singular='', $plural='', $extra_supports=array(), $extra_settings=array()) {
 		if (empty($singular)) $singular = ucwords(substr($slug, 0, strlen($slug) - 1));
 		if (empty($plural)) $plural = $singular.'s';

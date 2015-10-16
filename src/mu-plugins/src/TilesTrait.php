@@ -12,6 +12,10 @@ trait TilesTrait {
 		return $this->$fn($content);
 	}
 
+	protected function breakContent() {
+		return '';
+	}
+
 	protected function imageContent($acfImage) {
 		return self::instance()->acfResponsiveImage($acfImage);
 	}

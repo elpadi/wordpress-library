@@ -41,6 +41,9 @@ class TilesInfo extends ArrayObject {
 		$types = explode(',', $row['types']);
 		$sizes = explode(',', $row['colSizes']);
 		$rowParams = explode(',', $row['params']);
+		if ($types[0] === 'break') {
+			return new TilesColumn(100, 0, $types, ['100x'], [NULL]);
+		}
 		foreach ($types as $i => $type) {
 			$fn = "{$type}Param";
 			$params[] = $this->$fn($rowParams);

@@ -61,15 +61,15 @@ trait ImagesTrait {
 		return $this->getResponsiveAttributesFromPaths($paths);
 	}
 
-	protected function createResponsiveImage($atts, $classes) {
+	protected function createResponsiveImage($atts, $classes, $sizes=array('100vw')) {
 		extract($atts);
-		return sprintf('<img class="wp-image responsive-image %s" alt="" src="%s" srcset="%s">', implode(' ', $classes), $src, implode(',', $srcs));
+		return sprintf('<img class="wp-image responsive-image %s" alt="" src="%s" srcset="%s" sizes="%s">', implode(' ', $classes), $src, implode(',', $srcs), implode(',', $sizes));
 	}
 
-	public function acfResponsiveImage($field_name_or_field, $post_id=0, $classes=array()) {
+	public function acfResponsiveImage($field_name_or_field, $post_id=0, $classes=array(), $sizes=array('100vw')) {
 		$acf_image = is_string($field_name_or_field) ? get_field($field_name_or_field, $post_id) : $field_name_or_field;
-		if (!$acf_image) return '';
-		return $this->createResponsiveImage($this->getImageAttributesFromAcfImage($acf_image), $classes);
+		if (!is_array($acf_image)) return '';
+		return $this->createResponsiveImage($this->getImageAttributesFromAcfImage($acf_image), $classes, $sizes);
 	}
 
 	public function responsiveFeaturedImage($post_id=0, $classes=array()) {
@@ -110,8 +110,8 @@ trait ImagesTrait {
 		}
 	}
 
-	public function acfSlideshow($field_name, $post_id=0, $titles_are_links=false, $is_fullscreen=true) {
-		$classes = apply_filters('slideshow_classes', ['slideshow']);
+	public function acfSlideshow($field_name, $post_id=0, $classes=array(), $show_buttons = true) {
+		$classes = apply_filters('slideshow_classes', array_merge(['slideshow'], $classes));
 		extract($this->acfImagesInfo($field_name, $post_id));
 		include(MU_PLUGIN_BASE_DIR.'/templates/slideshow.php');
 	}
