@@ -28,6 +28,13 @@ trait SiteTrait {
 	protected function siteSettings() {
 	}
 	
+	public function isAcfCheckboxChecked($field_name, $post_id=0, $value_string='') {
+		$value = get_field($field_name, $post_id);
+		if (is_bool($value)) return $value;
+		if (is_array($value) && count($value) && (empty($value_string) || $value[0] === $value_string)) return TRUE;
+		return FALSE;
+	}
+
 	public function acfSelectOptions($group_name, $field_name) {
 		$settings = get_posts(['name' => "acf_$group_name", 'post_type' => 'acf']);
 		if (!count($settings)) return [];
