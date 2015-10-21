@@ -1,7 +1,7 @@
 <?php
 defined('ABSPATH') || exit;
 
-class App implements SingletonInterface, ImagesInterface, GridInterface, TilesInterface, PaginationInterface, PostQueriesInterface {
+abstract class App extends Site implements SingletonInterface, ImagesInterface, GridInterface, TilesInterface, PaginationInterface, PostQueriesInterface {
 	use SingletonTrait;
 	use PostsTrait;
 	use PostTypesTrait;
@@ -10,18 +10,20 @@ class App implements SingletonInterface, ImagesInterface, GridInterface, TilesIn
 	use ImagesTrait;
 	use GridTrait;
 	use TilesTrait;
-	use SiteTrait;
 
-	final protected function __construct() {
-		add_filter('grid_item_class', array($this, 'grid_item_class'), 10, 5);
-		add_action('init', array($this, 'siteInit'));
+	private function __construct() {
 		add_action('wp', array($this, 'themeInit'));
-		add_action('after_setup_theme', array($this, 'themeSetup'));
-		add_action('widgets_init', array($this, 'widgetsInit'));
 		add_action('admin_init', array($this, 'adminInit'));
-		if (defined('DISABLE_ADMIN_BAR') && DISABLE_ADMIN_BAR) {
-			add_filter('show_admin_bar', '__return_false');
-		}
+		$this->checkAdminBarStatus();
+		$this->siteInit();
+	}
+
+	public function adminInit() {
+		add_filter('acf/fields/relationship/query', function($options, $field, $the_post) {
+			$options['post_status'] = 'publish';
+			return $options;
+		}, 10, 3);
+		$this->siteSettings();
 	}
 
 }
