@@ -1,0 +1,15 @@
+{
+	"name": "elpadi/wordpress-library",
+	"type": "library"
+	"keywords": ["wordpress"],
+	"homepage": "https://github.com/elpadi/wordpress-library",
+	"license": "GPL-3.0+",
+	"authors": [
+		{
+			"name": "Carlos Padilla",
+			"email": "padi_05@yahoo.com",
+			"homepage": "https://github.com/elpadi",
+			"role": "Developer"
+		}
+	]
+}
