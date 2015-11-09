@@ -1,6 +1,6 @@
 {
 	"name": "elpadi/wordpress-library",
-	"type": "library"
+	"type": "library",
 	"keywords": ["wordpress"],
 	"homepage": "https://github.com/elpadi/wordpress-library",
 	"license": "GPL-3.0+",
