@@ -16,14 +16,6 @@ if (!function_exists( 'add_action')) {
 }
 
 /**
- * Load dependencies
- * https://github.com/lstrojny/functional-php
- * https://github.com/matteosister/php-curry
- */
-require(__DIR__.'/vendor/Functional/_import.php');
-require(__DIR__.'/vendor/Curry/functions.php');
-
-/**
  * Stop Contact Form 7 from printing useless assets
  */
 define('WPCF7_LOAD_JS', false);

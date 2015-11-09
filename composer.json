@@ -11,5 +11,9 @@
 			"homepage": "https://github.com/elpadi",
 			"role": "Developer"
 		}
-	]
+	],
+	"require": {
+		"lstrojny/functional-php": "*",
+		"matteosister/php-curry": "*"
+	}
 }
