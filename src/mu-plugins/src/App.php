@@ -12,7 +12,7 @@ class App implements SingletonInterface, ImagesInterface, GridInterface, TilesIn
 	use TilesTrait;
 	use SiteTrait;
 
-	private function __construct() {
+	final protected function __construct() {
 		add_filter('grid_item_class', array($this, 'grid_item_class'), 10, 5);
 		add_action('wp', array($this, 'theme_init'));
 		add_action('admin_init', array($this, 'siteSettings'));
