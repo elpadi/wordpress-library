@@ -13,7 +13,8 @@
 		}
 	],
 	"require": {
+		"pablodip/felpado": "*",
 		"lstrojny/functional-php": "*",
-		"matteosister/php-curry": "*"
+		"cypresslab/php-curry": "*"
 	}
 }
