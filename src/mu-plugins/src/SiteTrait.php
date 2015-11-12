@@ -18,6 +18,9 @@ trait SiteTrait {
 	public function theme_init() {
 	}
 
+	public function initWidgets() {
+	}
+
 	public function acfSelectOptions($group_name, $field_name) {
 		$settings = get_posts(['name' => "acf_$group_name", 'post_type' => 'acf']);
 		if (!count($settings)) return [];

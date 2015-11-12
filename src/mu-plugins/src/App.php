@@ -16,6 +16,7 @@ class App implements SingletonInterface, ImagesInterface, GridInterface, TilesIn
 		add_filter('grid_item_class', array($this, 'grid_item_class'), 10, 5);
 		add_action('wp', array($this, 'theme_init'));
 		add_action('admin_init', array($this, 'siteSettings'));
+		add_action('widgets_init', array($this, 'initWidgets'));
 		if (defined('DISABLE_ADMIN_BAR') && DISABLE_ADMIN_BAR) {
 			add_filter('show_admin_bar', '__return_false');
 		}
