@@ -14,13 +14,14 @@ class App implements SingletonInterface, ImagesInterface, GridInterface, TilesIn
 
 	final protected function __construct() {
 		add_filter('grid_item_class', array($this, 'grid_item_class'), 10, 5);
-		add_action('wp', array($this, 'theme_init'));
-		add_action('admin_init', array($this, 'siteSettings'));
-		add_action('widgets_init', array($this, 'initWidgets'));
+		add_action('init', array($this, 'siteInit'));
+		add_action('wp', array($this, 'themeInit'));
+		add_action('after_setup_theme', array($this, 'themeSetup'));
+		add_action('widgets_init', array($this, 'widgetsInit'));
+		add_action('admin_init', array($this, 'adminInit'));
 		if (defined('DISABLE_ADMIN_BAR') && DISABLE_ADMIN_BAR) {
 			add_filter('show_admin_bar', '__return_false');
 		}
-		$this->siteInit();
 	}
 
 }

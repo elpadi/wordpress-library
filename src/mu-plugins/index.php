@@ -16,6 +16,5 @@ spl_autoload_register(function($class) {
 	is_file($path = __DIR__."/src/$class.php") && include($path);
 });
 
-add_action('init', array(MU_SITE_CLASS_NAME, 'instance'));
 add_action('wp_ajax_nopriv_content', array(MU_SITE_CLASS_NAME, 'ajaxContentResponse'));
 add_action('wp_ajax_content', array(MU_SITE_CLASS_NAME, 'ajaxContentResponse'));
