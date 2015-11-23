@@ -63,18 +63,18 @@ trait PostQueriesTrait {
 		$selects = ["posts.*"];
 		$froms = ["`$wpdb->posts` posts"];
 
-		foreach ($fields['text'] as $key) {
+		if (isset($fields['text'])) foreach ($fields['text'] as $key) {
 			$selects[] = self::textFieldSelect($key);
 			$froms[] = self::textFieldFrom($key);
 		}
-		foreach ($fields['attachments'] as $key) {
+		if (isset($fields['attachments'])) foreach ($fields['attachments'] as $key) {
 			$selects[] = self::attachmentFileSelect($key);
 			$selects[] = self::attachmentDataSelect($key);
 			$froms[] = self::attachmentIdFrom($key);
 			$froms[] = self::attachmentDataFrom($key);
 			$froms[] = self::attachmentFileFrom($key);
 		}
-		foreach ($fields['repeaters'] as $repeater_key => $repeater_fields) {
+		if (isset($fields['repeaters'])) foreach ($fields['repeaters'] as $repeater_key => $repeater_fields) {
 			$selects[] = "3 AS {$repeater_key}_count";
 			for ($i = 0; $i < 3; $i++) {
 				$index_key = "{$repeater_key}_{$i}";
@@ -83,12 +83,12 @@ trait PostQueriesTrait {
 				foreach ($repeater_fields['post_columns'] as $col) {
 					$selects[] = self::repeaterPostColumnSelect($index_key, $col);
 				}
-				foreach ($repeater_fields['text'] as $key) {
+				if (isset($repeater_fields['text'])) foreach ($repeater_fields['text'] as $key) {
 					$_key = "{$repeater_key}_{$i}_{$key}";
 					$selects[] = self::textFieldSelect($_key);
 					$froms[] = self::textFieldFrom($_key);
 				}
-				foreach ($repeater_fields['attachments'] as $key) {
+				if (isset($repeater_fields['attachments'])) foreach ($repeater_fields['attachments'] as $key) {
 					$item_key = "{$repeater_key}_{$i}_{$key}";
 					$froms[] = self::attachmentIdFrom($item_key, $key, "{$repeater_key}_{$i}_post");
 					$selects[] = self::attachmentDataSelect($item_key);
