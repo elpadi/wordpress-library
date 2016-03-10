@@ -9,10 +9,10 @@ class TilesInfo extends ArrayObject {
 	protected $totalWidth = 0;
 
 	public function __construct($field, $media) {
-		parent::__construct([]);
+		parent::__construct(array());
 		$this->media = $media;
 		$rowIndex = 0;
-		$rows = [];
+		$rows = array();
 		foreach ($field['body'] as $i => $tableRow) {
 			$column = $this->tilesColumn($this->parseTableRow($tableRow));
 			$rows[$rowIndex][] = $column;
@@ -42,7 +42,7 @@ class TilesInfo extends ArrayObject {
 		$sizes = explode(',', $row['colSizes']);
 		$rowParams = explode(',', $row['params']);
 		if ($types[0] === 'break') {
-			return new TilesColumn(100, 0, $types, ['100x'], [NULL]);
+			return new TilesColumn(100, 0, $types, array('100x'), array(NULL));
 		}
 		foreach ($types as $i => $type) {
 			$fn = "{$type}Param";

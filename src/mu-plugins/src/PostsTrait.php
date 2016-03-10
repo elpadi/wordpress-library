@@ -23,7 +23,7 @@ trait PostsTrait {
 
 	public function getChildPages($id=0, $args=array()) {
 		if (!$id) $id = get_the_ID();
-		return get_posts(array_merge(['post_type' => 'page', 'post_parent' => $id, 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC'], $args));
+		return get_posts(array_merge(array('post_type' => 'page', 'post_parent' => $id, 'posts_per_page' => -1, 'orderby' => 'menu_order', 'order' => 'ASC'), $args));
 	}
 
 }

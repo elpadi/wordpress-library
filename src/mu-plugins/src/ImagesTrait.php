@@ -89,7 +89,7 @@ trait ImagesTrait {
 	protected function acfImagesInfo($field_name, $post_id) {
 		$acf_images = get_field($field_name, $post_id);
 		$html_id = $post_id ? "$field_name-$post_id" : $field_name;
-		$images = empty($acf_images) ? [] : F\map(F\select($acf_images, function($acf_image) {
+		$images = empty($acf_images) ? array() : F\map(F\select($acf_images, function($acf_image) {
 			return strpos($acf_image['mime_type'], 'image') === 0;
 		}), array($this, 'getImageAttributesFromAcfImage'));
 		$first = count($images) ? $images[0] : NULL;
@@ -111,7 +111,7 @@ trait ImagesTrait {
 	}
 
 	public function acfSlideshow($field_name, $post_id=0, $classes=array(), $show_buttons = true) {
-		$classes = apply_filters('slideshow_classes', array_merge(['slideshow'], $classes));
+		$classes = apply_filters('slideshow_classes', array_merge(array('slideshow'), $classes));
 		extract($this->acfImagesInfo($field_name, $post_id));
 		include(MU_PLUGIN_BASE_DIR.'/templates/slideshow.php');
 	}

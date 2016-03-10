@@ -47,7 +47,7 @@ trait GridTrait {
 	public function subsectionsGrid($id='') {
 		$subsections_menu = get_field('subsections');
 		if (!$subsections_menu) return;
-		$container_classes = ['grid--image','grid--subsections'];
+		$container_classes = array('grid--image','grid--subsections');
 		if (!empty($id)) $container_classes[] = "grid--$id";
 		$colcount = 3;
 		$sections = wp_get_nav_menu_items($subsections_menu);

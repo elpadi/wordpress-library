@@ -36,20 +36,20 @@ trait SiteTrait {
 	}
 
 	public function acfSelectOptions($group_name, $field_name) {
-		$settings = get_posts(['name' => "acf_$group_name", 'post_type' => 'acf']);
-		if (!count($settings)) return [];
+		$settings = get_posts(array('name' => "acf_$group_name", 'post_type' => 'acf'));
+		if (!count($settings)) return array();
 		$field_meta = F\select(F\pluck(get_post_meta($settings[0]->ID), 0), function($val, $key) use ($field_name) {
 			return strpos($key, 'field_') === 0
 				&& ($data = unserialize($val))
 				&& $data['name'] === $field_name;
 		});
-		if (!count($field_meta)) return [];
+		if (!count($field_meta)) return array();
 		$data = unserialize(reset($field_meta));
 		return $data['choices'];
 	}
 
 	public function postsDropdownField($post_type, $name, $value) {
-		$galleries = get_posts(['post_type' => self::prefix($post_type), 'posts_per_page' => -1]);
+		$galleries = get_posts(array('post_type' => self::prefix($post_type), 'posts_per_page' => -1));
 		$options = array_combine(F\pluck($galleries, 'post_name'), F\pluck($galleries, 'post_title'));
 		include(MU_PLUGIN_BASE_DIR.'/templates/form-options.php');
 	}

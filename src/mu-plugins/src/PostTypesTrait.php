@@ -29,7 +29,7 @@ trait PostTypesTrait {
 		if (empty($singular)) $singular = ucwords(substr($slug, 0, strlen($slug) - 1));
 		if (empty($plural)) $plural = $singular.'s';
 		if (empty($rewrite_slug)) $rewrite_slug = $slug;
-		register_taxonomy(self::prefix($slug), self::prefix($obj_slug), [
+		register_taxonomy(self::prefix($slug), self::prefix($obj_slug), array(
 			'public' => true,
 			'label' => $plural,
 			'labels' => array(
@@ -40,7 +40,7 @@ trait PostTypesTrait {
 			'rewrite' => array(
 				'slug' => $rewrite_slug,
 			),
-		]);
+		));
 		register_taxonomy_for_object_type(self::prefix($slug), self::prefix($obj_slug));
 	}
 

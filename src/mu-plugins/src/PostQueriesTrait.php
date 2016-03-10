@@ -60,8 +60,8 @@ trait PostQueriesTrait {
 	public static function customPostsQuery($ids, $fields, $order='DESC') {
 		global $wpdb;
 
-		$selects = ["posts.*"];
-		$froms = ["`$wpdb->posts` posts"];
+		$selects = array("posts.*");
+		$froms = array("`$wpdb->posts` posts");
 
 		if (isset($fields['text'])) foreach ($fields['text'] as $key) {
 			$selects[] = self::textFieldSelect($key);

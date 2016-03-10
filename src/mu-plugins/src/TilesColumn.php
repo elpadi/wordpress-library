@@ -6,7 +6,7 @@ class TilesColumn extends ArrayObject {
 	public $height;
 
 	public function __construct($width, $height, $types, $sizes, $params=array()) {
-		parent::__construct([]);
+		parent::__construct(array());
 		$this->width = $width;
 		$this->height = $height;
 		foreach ($types as $i => $type) {
