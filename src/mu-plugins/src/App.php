@@ -1,5 +1,5 @@
 <?php
-defined('ABSPATH') || exit;
+namespace MustUsePlugin;
 
 abstract class App extends Site implements SingletonInterface, ImagesInterface, GridInterface, TilesInterface, PaginationInterface, PostQueriesInterface {
 	use SingletonTrait;

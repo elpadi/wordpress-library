@@ -14,5 +14,11 @@
 	],
 	"require": {
 		"lstrojny/functional-php": "~1.0"
+	},
+	"autoload": {
+		"files": ["src/mu-plugins/index.php"],
+		"psr-4": {
+			"MustUsePlugin\\": "src/mu-plugins/src/"
+		}
 	}
 }

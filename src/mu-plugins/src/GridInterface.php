@@ -1,4 +1,5 @@
 <?php
+namespace MustUsePlugin;
 
 interface GridInterface {
 

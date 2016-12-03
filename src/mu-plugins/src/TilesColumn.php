@@ -1,4 +1,5 @@
 <?php
+namespace MustUsePlugin;
 
 class TilesColumn extends ArrayObject {
 

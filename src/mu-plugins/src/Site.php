@@ -1,4 +1,5 @@
 <?php
+namespace MustUsePlugin;
 use Functional as F;
 
 abstract class Site {
@@ -18,6 +19,11 @@ abstract class Site {
 		if (is_bool($value)) return $value;
 		if (is_array($value) && count($value) && (empty($value_string) || $value[0] === $value_string)) return TRUE;
 		return FALSE;
+	}
+
+	protected function enableAjaxContent() {
+		add_action('wp_ajax_nopriv_content', array(MU_SITE_CLASS_NAME, 'ajaxContentResponse'));
+		add_action('wp_ajax_content', array(MU_SITE_CLASS_NAME, 'ajaxContentResponse'));
 	}
 
 	protected function checkAdminBarStatus() {

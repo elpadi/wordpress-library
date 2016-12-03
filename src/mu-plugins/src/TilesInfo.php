@@ -1,4 +1,5 @@
 <?php
+namespace MustUsePlugin;
 
 class TilesInfo extends ArrayObject {
 
