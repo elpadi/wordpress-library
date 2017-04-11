@@ -12,7 +12,8 @@ abstract class App extends Site implements SingletonInterface, ImagesInterface, 
 	use TilesTrait;
 
 	private function __construct() {
-		add_action('wp', array($this, 'themeInit'));
+		add_action('init', [$this, 'themeInit']);
+		add_action('wp', [$this, 'themeSetup']);
 		add_action('admin_init', array($this, 'adminInit'));
 		$this->checkAdminBarStatus();
 		$this->siteInit();
