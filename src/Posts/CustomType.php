@@ -36,6 +36,7 @@ class CustomType {
 			'labels' => $this->createLabels(),
 			'menu_position' => 5,
 			'has_archive' => true,
+			'show_in_rest' => true,
 			'rewrite' => [
 				'slug' => $this->slug,
 			],
