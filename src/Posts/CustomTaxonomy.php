@@ -6,7 +6,7 @@ class CustomTaxonomy {
 	protected static $supports = ['title','thumbnail'];
 
 	public function __construct($slug, $singular='', $plural='', $rewrite='') {
-		if (empty($singular)) $singular = ucwords(implode(' ', explode('-', $slug)));
+		if (empty($singular)) $singular = ucwords(implode(' ', explode('_', $slug)));
 		if (empty($plural)) $plural = $singular.'s';
 		$this->slug = $slug;
 		$this->singular = $singular;
@@ -47,9 +47,29 @@ class CustomTaxonomy {
 		];
 	}
 
-	public function register(CustomType $type) {
-		register_taxonomy($this->slug, $type->slug, $this->createSettings());
-		register_taxonomy_for_object_type($this->slug, $type->slug);
+	public function register($post_type) {
+		add_action('init', function() use ($post_type) {
+			register_taxonomy($this->slug, $post_type, $this->createSettings());
+			foreach ((array)$post_type as $t)
+				register_taxonomy_for_object_type($this->slug, $t);
+		});
+	}
+
+	public function addTerm($title, $args=[]) {
+		return wp_insert_term($title, $this->slug, $args);
+	}
+
+	public function hasTerm($term) {
+		return term_exists($term, $this->slug);
+	}
+
+	public function getTerms() {
+		$terms = get_terms(['taxonomy' => $this->slug, 'hide_empty' => false]);
+		if (is_wp_error($terms)) {
+			var_dump($this, $terms->get_error_messages());
+			exit();
+		}
+		return $terms;
 	}
 
 }
