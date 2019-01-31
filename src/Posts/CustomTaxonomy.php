@@ -38,9 +38,10 @@ class CustomTaxonomy {
 			
 	protected function createSettings() {
 		return [
-			'public' => true,
 			'labels' => $this->createLabels(),
 			'query_var' => $this->slug,
+			'public' => true,
+			'show_in_rest' => TRUE,
 			'rewrite' => array(
 				'slug' => $this->rewrite,
 			),
