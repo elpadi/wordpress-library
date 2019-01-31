@@ -51,6 +51,7 @@ class Admin {
 	public function template($templateName, $isGlobal=FALSE) {
 		global $current_user, $post;
 		extract($this->templateVars);
+		$p = isset($_GET['post_id']) ? get_post($_GET['post_id']) : new \WP_Post(new \stdClass);
 		if ($isGlobal) {
 			echo '<style>html { padding-top: 0 !important; }</style>';
 			include($this->pluginDir."/templates/global/before-content.php"); 
