@@ -43,10 +43,10 @@ class Assets {
 		$this->asset($path, 'wp_enqueue_style', 'css', 'css', $deps, $version);
 	}
 
-	public function dir($path, $type) {
+	public function dir($path, $type, $deps=[]) {
 		$base = "$this->baseDir/$this->assetPath/$type";
 		foreach (glob("$base/$path/*.$type") as $file) {
-			call_user_func([$this, $type], "$path/" . basename($file, ".$type"));
+			call_user_func([$this, $type], "$path/" . basename($file, ".$type"), $deps);
 		}
 	}
 
