@@ -67,4 +67,8 @@ class Admin {
 		add_action('login_enqueue_scripts', $fn);
 	}
 
+	public function registerBlockAssets($fn) {
+		add_action('enqueue_block_editor_assets', $fn);
+	}
+
 }
