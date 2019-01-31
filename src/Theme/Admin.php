@@ -15,7 +15,7 @@ class Admin {
 
 	public function isAdminScreen() {
 		global $current_screen;
-		return strpos($current_screen->base, 'tome-admin') !== FALSE;
+		return strpos($current_screen->base, 'tome-admin') !== FALSE || isset($_GET['embedded']);
 	}
 
 	public function bodyClass($classes) {
