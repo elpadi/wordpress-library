@@ -13,13 +13,13 @@ class Admin {
 		add_filter('admin_body_class', [$this, 'bodyClass']);
 	}
 
-	public function isAdminScreen() {
+	public function isThemeScreen() {
 		global $current_screen;
-		return strpos($current_screen->base, 'tome-admin') !== FALSE || isset($_GET['embedded']);
+		return strpos($current_screen->base, $this->slug) !== FALSE || isset($_GET['embedded']);
 	}
 
 	public function bodyClass($classes) {
-		if ($this->isAdminScreen()) $classes .= ' tome2-admin ';
+		if ($this->isThemeScreen()) $classes .= " $this->slug ";
 		return $classes;
 	}
 
@@ -28,7 +28,7 @@ class Admin {
 		add_action('admin_menu', function() use ($options, $capability) {
 			$handle = "$this->slug-settings";
 			add_menu_page("$this->title Settings", $this->title, $capability, $handle, [$this, 'optionsHTML']);
-			foreach($options as $slug => $title)
+			foreach(apply_filters('admin_theme_submenus', $options) as $slug => $title)
 				add_submenu_page($handle, "$this->title $title", $title, $capability, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
 		});
 	}
@@ -50,6 +50,7 @@ class Admin {
 
 	public function template($templateName, $isGlobal=FALSE) {
 		global $current_user, $post;
+		$adminTheme = $this;
 		extract($this->templateVars);
 		$p = isset($_GET['post_id']) ? get_post($_GET['post_id']) : new \WP_Post(new \stdClass);
 		if ($isGlobal) {
@@ -63,7 +64,12 @@ class Admin {
 	}
 
 	public function registerAssets($fn) {
-		add_action('admin_enqueue_scripts', $fn);
+		add_action('admin_enqueue_scripts', function() use ($fn) {
+			if ($this->isThemeScreen()) call_user_func($fn);
+		});
+	}
+
+	public function registerLoginAssets($fn) {
 		add_action('login_enqueue_scripts', $fn);
 	}
 
