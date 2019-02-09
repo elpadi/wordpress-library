@@ -15,39 +15,45 @@ class Assets {
 		$this->assetPath = $assetPath;
 	}
 
-	public function asset($path, $callback, $ext='', $folder='', $deps=[], $version='') {
+	public function asset($path, $callback, $ext='', $folder='', $deps=[], $enqueue=true) {
+		$handle = $this->prefix.'_'.str_replace('/', '-', $path);
 		call_user_func(
-			$callback,
-			$this->prefix.'_'.basename($path),
+			$enqueue ? $callback : str_replace('enqueue', 'register', $callback),
+			$handle,
 			"$this->baseUri/$this->assetPath/$folder/$path.$ext",
 			$deps,
-			empty($version) ? filemtime("$this->baseDir/$this->assetPath/$folder/$path.$ext") : $version
+			filemtime("$this->baseDir/$this->assetPath/$folder/$path.$ext")
 		);
+		return $handle;
 	}
 
-	public function raw($type, $handle, $path, $deps=[], $version='') {
+	public function raw($type, $handle, $path, $deps=[], $enqueue=true) {
+		$callback = $type == 'js' ? 'wp_enqueue_script' : 'wp_enqueue_style';
 		call_user_func(
-			$type == 'js' ? 'wp_enqueue_script' : 'wp_enqueue_style',
+			$enqueue ? $callback : str_replace('enqueue', 'register', $callback),
 			$handle,
 			"$this->baseUri/$this->assetPath/$path",
 			$deps,
-			empty($version) ? filemtime("$this->baseDir/$this->assetPath/$path") : $version
+			filemtime("$this->baseDir/$this->assetPath/$path")
 		);
 	}
 
-	public function js($path, $deps=[], $version='') {
-		$this->asset($path, 'wp_enqueue_script', 'js', 'js', $deps, $version);
+	public function js($path, $deps=[], $enqueue=true) {
+		return $this->asset($path, 'wp_enqueue_script', 'js', 'js', $deps, $enqueue);
 	}
 
-	public function css($path, $deps=[], $version='') {
-		$this->asset($path, 'wp_enqueue_style', 'css', 'css', $deps, $version);
+	public function css($path, $deps=[], $enqueue=true) {
+		return $this->asset($path, 'wp_enqueue_style', 'css', 'css', $deps, $enqueue);
 	}
 
-	public function dir($path, $type, $deps=[]) {
+	public function dir($path, $type, $deps=[], $enqueue=true) {
 		$base = "$this->baseDir/$this->assetPath/$type";
-		foreach (glob("$base/$path/*.$type") as $file) {
-			call_user_func([$this, $type], "$path/" . basename($file, ".$type"), $deps);
+		$files = glob("$base/$path/*.$type");
+		if (count($files) == 0) return [];
+		foreach ($files as $file) {
+			$handles[] = call_user_func([$this, $type], "$path/" . basename($file, ".$type"), $deps, $enqueue);
 		}
+		return $handles;
 	}
 
 }
