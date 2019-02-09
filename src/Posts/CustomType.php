@@ -3,10 +3,10 @@ namespace WordpressLib\Posts;
 
 class CustomType {
 
-	protected static $supports = ['title','thumbnail'];
+	protected static $supports = ['title','editor','thumbnail'];
 
 	public function __construct($slug, $singular='', $plural='') {
-		if (empty($singular)) $singular = ucwords(implode(' ', explode('-', $slug)));
+		if (empty($singular)) $singular = ucwords(str_replace('-', ' ', $slug));
 		if (empty($plural)) $plural = $singular.'s';
 		$this->slug = $slug;
 		$this->singular = $singular;
@@ -51,6 +51,14 @@ class CustomType {
 
 	public function getIndexUrl() {
 		return get_post_type_archive_link($this->slug);
+	}
+
+	public function getPosts() {
+		$args = [
+			'post_type' => $this->slug,
+			'posts_per_page' => -1,
+		];
+		return get_posts($args);
 	}
 
 }
