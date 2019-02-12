@@ -22,8 +22,13 @@ class Block {
 		];
 	}
 
+	public function registerShortcode() {
+		add_filter('the_content', [$this, 'contentToShortcode'], -10);
+	}
+
 	public function register() {
 		register_block_type("$this->pluginSlug/$this->blockSlug", $this->createSettings());
+		if (method_exists($this, 'contentToShortcode') && !is_admin()) $this->registerShortcode();
 	}
 
 }
