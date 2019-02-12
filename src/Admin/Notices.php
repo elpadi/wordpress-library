@@ -2,12 +2,10 @@
 namespace WordpressLib\Admin;
 
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage;
 
 class Notices {
 
-	public function __construct() {
-		global $symfonySession;
+	public function __construct(Session $symfonySession) {
 		$this->flash = $symfonySession->getFlashBag();
 		add_action('admin_notices', [$this, 'display']);
 	}
