@@ -13,14 +13,35 @@ class Admin {
 		add_filter('admin_body_class', [$this, 'bodyClass']);
 	}
 
+	public function isEmbedded() {
+		return isset($_GET['embedded']);
+	}
+
 	public function isThemeScreen() {
 		global $current_screen;
-		return strpos($current_screen->base, $this->slug) !== FALSE || isset($_GET['embedded']);
+		return strpos($current_screen->base, $this->slug) !== FALSE || $this->isEmbedded();
+	}
+
+	public function isEmbedScreen() {
+		global $current_screen;
+		return (
+			preg_match("/$this->slug-(.*)-settings$/", $current_screen->id, $matches)
+			&& in_array($matches[1], ['page','gallery','users'])
+		);
+	}
+
+	protected function getBodyClass() {
+		return $this->slug;
 	}
 
 	public function bodyClass($classes) {
-		if ($this->isThemeScreen()) $classes .= " $this->slug ";
-		return $classes;
+		$c = [];
+		if ($this->isThemeScreen()) {
+			$c[] = $this->getBodyClass();
+			if ($this->isEmbedScreen()) $c[] = "$this->slug--embed";
+		}
+		if ($this->isEmbedded()) $c[] = "$this->slug--embedded";
+		return empty($c) ? $classes : $classes.' '.implode(' ', $c);
 	}
 
 	public function addOptions($capability, $options) {
@@ -28,9 +49,35 @@ class Admin {
 		add_action('admin_menu', function() use ($options, $capability) {
 			$handle = "$this->slug-settings";
 			add_menu_page("$this->title Settings", $this->title, $capability, $handle, [$this, 'optionsHTML']);
-			foreach(apply_filters('admin_theme_submenus', $options) as $slug => $title)
+			foreach($this->getSubMenus($options) as $slug => $title)
 				add_submenu_page($handle, "$this->title $title", $title, $capability, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
 		});
+	}
+
+	protected function getSubMenus($options) {
+		$subs = apply_filters('admin_theme_submenus', $options);
+		foreach (['page','post','users','nav-menus'] as $slug) $subs[$slug] = ucwords($slug);
+		return $subs;
+	}
+
+	public function getScreenPostTypeMap() {
+		return [];
+	}
+
+	public function getScreenPostType() {
+		$map = $this->getScreenPostTypeMap();
+		return isset($map[$this->screenSlug]) ? $map[$this->screenSlug] : $this->screenSlug;
+	}
+
+	public function getScreenTemplateMap() {
+		$map = [];
+		foreach (['page','post'] as $s) $map[$s] = 'listing';
+		return $map;
+	}
+
+	public function getScreenTemplate() {
+		$map = $this->getScreenTemplateMap();
+		return isset($map[$this->screenSlug]) ? $map[$this->screenSlug] : 'embed';
 	}
 
 	public function optionsHTML() {
@@ -39,13 +86,13 @@ class Admin {
 			wp_die(__('You do not have sufficient permissions to access this page.'));
 		}
 		if (strpos($current_screen->id, "$this->slug-settings") !== FALSE) {
-			$template = 'home';
+			$this->screenSlug = 'pages';
 		}
 		elseif (preg_match("/$this->slug-(.*)-settings$/", $current_screen->id, $matches)) {
-			$template = $matches[1];
+			$this->screenSlug = $matches[1];
 		}
 		else throw new \InvalidArgumentException("Admin screen '$current_screen->id' is invalid.");
-		$this->template($template, TRUE);
+		$this->template($this->getScreenTemplate(), TRUE);
 	}
 
 	public function template($templateName, $isGlobal=FALSE) {
