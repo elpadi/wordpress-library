@@ -106,13 +106,23 @@ class Admin {
 	public function template($templateName, $isGlobal=FALSE) {
 		global $current_user, $post;
 		$adminTheme = $this;
-		extract($this->templateVars);
-		$p = isset($_GET['post_id']) ? get_post($_GET['post_id']) : new \WP_Post(new \stdClass);
+
+		if (is_admin()) {
+			$this->templateVars['embed_url'] = admin_url("$this->screenSlug.php").'?embedded=true';
+			$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
+			$this->templateVars['screenTitle'] = __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
+			$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
+		}
+
+		extract(apply_filters("{$this->slug}_theme_{$this->screenSlug}_template_vars", $this->templateVars));
+
 		if ($isGlobal) {
 			echo '<style>html { padding-top: 0 !important; }</style>';
 			include($this->pluginDir."/templates/global/before-content.php"); 
 		}
+
 		include($this->pluginDir."/templates/content/$templateName.php"); 
+
 		if ($isGlobal) {
 			include($this->pluginDir."/templates/global/after-content.php"); 
 		}
