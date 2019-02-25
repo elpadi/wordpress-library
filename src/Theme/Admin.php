@@ -69,12 +69,16 @@ class Admin {
 	}
 
 	public function getScreenPostTypeMap() {
-		return [];
+		return ['pages' => 'page', 'posts' => 'post'];
 	}
 
-	public function getScreenPostType() {
+	public function getPostTypeFromScreen() {
 		$map = $this->getScreenPostTypeMap();
 		return isset($map[$this->screenSlug]) ? $map[$this->screenSlug] : $this->screenSlug;
+	}
+
+	public function getScreenFromPostType($post_type) {
+		return ($screen = array_search($post_type, $this->getScreenPostTypeMap())) !== FALSE ? $screen : '';
 	}
 
 	public function getScreenTemplateMap() {
