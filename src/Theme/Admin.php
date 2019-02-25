@@ -11,6 +11,14 @@ class Admin {
 		$this->pluginDir = $pluginDir;
 		$this->templateVars = $templateVars;
 		add_filter('admin_body_class', [$this, 'bodyClass']);
+		add_action('init', [$this, 'init'], 20);
+		add_action('admin_init', [$this, 'adminInit'], 20);
+	}
+
+	public function init() {
+	}
+
+	public function adminInit() {
 	}
 
 	public function isEmbedded() {
