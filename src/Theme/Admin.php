@@ -52,7 +52,7 @@ class Admin {
 		return empty($c) ? $classes : $classes.' '.implode(' ', $c);
 	}
 
-	public function addOptions($capability, $options) {
+	public function addOptions($capability, $options=[]) {
 		$this->optionsCapability = $capability;
 		add_action('admin_menu', function() use ($options, $capability) {
 			$handle = "$this->slug-settings";
