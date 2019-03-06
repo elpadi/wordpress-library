@@ -46,12 +46,18 @@ class Assets {
 		return $this->asset($path, 'wp_enqueue_style', 'css', 'css', $deps, $enqueue);
 	}
 
+	public function assetDirPathComparator($a, $b) {
+		return strlen($a) - strlen($b);
+	}
+
 	public function dir($path, $type, $deps=[], $enqueue=true) {
 		$base = "$this->baseDir/$this->assetPath/$type";
 		$files = glob("$base/$path/*.$type");
 		if (count($files) == 0) return [];
+		$files = array_map(function($f) use ($type) { return basename($f, ".$type"); }, $files);
+		usort($files, [$this, 'assetDirPathComparator']);
 		foreach ($files as $file) {
-			$handles[] = call_user_func([$this, $type], "$path/" . basename($file, ".$type"), $deps, $enqueue);
+			$handles[] = call_user_func([$this, $type], "$path/" . $file, $deps, $enqueue);
 		}
 		return $handles;
 	}
