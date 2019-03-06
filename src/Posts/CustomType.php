@@ -11,6 +11,9 @@ class CustomType {
 		$this->slug = $slug;
 		$this->singular = $singular;
 		$this->plural = $plural;
+		if (method_exists($this, 'updateRestFields')) {
+			add_filter("rest_prepare_$this->slug", [$this, 'updateRestFields'], 10, 3);
+		}
 	}
 
 	protected function createLabels() {
