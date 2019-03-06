@@ -3,6 +3,8 @@ namespace WordpressLib\Editor\Block;
 
 class Block {
 
+	protected $jsDeps = [];
+
 	public function __construct($pluginSlug, $blockSlug, $frontAssets, $editorAssets) {
 		$this->pluginSlug = $pluginSlug;
 		$this->blockSlug = $blockSlug;
@@ -12,7 +14,7 @@ class Block {
 	}
 
 	protected function createSettings() {
-		$ed_js_handle = $this->editorAssets->js("block-editor/blocks/$this->blockSlug", ['wp-blocks','wp-element','wp-editor'], FALSE);
+		$ed_js_handle = $this->editorAssets->js("block-editor/blocks/$this->blockSlug", array_merge(['wp-blocks','wp-element','wp-editor'], $this->jsDeps), FALSE);
 		$ed_css_handle = $this->editorAssets->css("block-editor/blocks/$this->blockSlug", [], FALSE);
 		$fr_css_handle = $this->frontAssets->css("block-editor/blocks/$this->blockSlug", [], FALSE);
 		return [
