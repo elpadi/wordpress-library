@@ -60,6 +60,14 @@ class CustomTaxonomy {
 		return wp_insert_term($title, $this->slug, $args);
 	}
 
+	public function editTerm($term_id, $args=[]) {
+		return wp_update_term($term_id, $this->slug, $args);
+	}
+
+	public function deleteTerm($term_id) {
+		return wp_delete_term($term_id, $this->slug);
+	}
+
 	public function hasTerm($term) {
 		return term_exists($term, $this->slug);
 	}
