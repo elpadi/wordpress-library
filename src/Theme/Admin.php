@@ -74,11 +74,11 @@ class Admin {
 
 	public function getPostTypeFromScreen() {
 		$map = $this->getScreenPostTypeMap();
-		return isset($map[$this->screenSlug]) ? $map[$this->screenSlug] : $this->screenSlug;
+		return isset($map[$this->screenSlug]) ? get_post_type_object($map[$this->screenSlug]) : NULL;
 	}
 
 	public function getScreenFromPostType($post_type) {
-		return ($screen = array_search($post_type, $this->getScreenPostTypeMap())) !== FALSE ? $screen : '';
+		return ($screen = array_search(is_object($post_type) ? $post_type->name : $post_type, $this->getScreenPostTypeMap())) !== FALSE ? $screen : '';
 	}
 
 	public function getScreenTemplateMap() {
