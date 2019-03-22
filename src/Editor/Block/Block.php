@@ -14,14 +14,7 @@ class Block {
 	}
 
 	protected function createSettings() {
-		$ed_js_handle = $this->editorAssets->js("block-editor/blocks/$this->blockSlug", array_merge(['wp-blocks','wp-element','wp-editor'], $this->jsDeps), FALSE);
-		$ed_css_handle = $this->editorAssets->css("block-editor/blocks/$this->blockSlug", [], FALSE);
-		$fr_css_handle = $this->frontAssets->css("block-editor/blocks/$this->blockSlug", [], FALSE);
-		return [
-			'editor_script' => $ed_js_handle,
-			'editor_style' => $ed_css_handle,
-			'style' => $fr_css_handle,
-		];
+		return [];
 	}
 
 	public function registerShortcode() {
