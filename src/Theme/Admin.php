@@ -118,6 +118,7 @@ class Admin {
 			$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
 		}
 
+		if ($templateName == 'listing' && isset($_GET['id'])) $templateName = 'single';
 		extract(apply_filters("{$this->slug}_theme_{$this->screenSlug}_template_vars", $this->templateVars));
 
 		if ($isGlobal) {
