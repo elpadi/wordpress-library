@@ -112,6 +112,7 @@ class Admin {
 		$adminTheme = $this;
 
 		if (is_admin()) {
+			$this->templateVars['screenSlug'] = $this->screenSlug;
 			$this->templateVars['embed_url'] = admin_url("$this->screenSlug.php").'?embedded=true';
 			$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
 			$this->templateVars['screenTitle'] = __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
@@ -119,6 +120,7 @@ class Admin {
 		}
 
 		if ($templateName == 'listing' && isset($_GET['id'])) $templateName = 'single';
+
 		extract(apply_filters("{$this->slug}_theme_{$this->screenSlug}_template_vars", $this->templateVars));
 
 		if ($isGlobal) {
