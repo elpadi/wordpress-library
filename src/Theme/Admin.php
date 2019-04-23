@@ -52,33 +52,26 @@ class Admin {
 		return empty($c) ? $classes : $classes.' '.implode(' ', $c);
 	}
 
-	public function addOptions($capability, $options=[]) {
-		$this->optionsCapability = $capability;
-		add_action('admin_menu', function() use ($options, $capability) {
-			$handle = "$this->slug-settings";
-			add_menu_page("$this->title Settings", $this->title, $capability, $handle, [$this, 'optionsHTML']);
-			foreach($this->getSubMenus($options) as $slug => $title)
-				add_submenu_page($handle, "$this->title $title", $title, $capability, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
-		});
-	}
-
-	protected function getSubMenus($options) {
-		$subs = apply_filters('admin_theme_submenus', $options);
-		foreach (['page','post','users','nav-menus'] as $slug) $subs[$slug] = ucwords($slug);
-		return $subs;
+	protected function getSubMenus() {
+		return [];
 	}
 
 	public function getScreenPostTypeMap() {
-		return ['pages' => 'page', 'posts' => 'post'];
+		return [];
+	}
+
+	public function getCapabilityFromScreen() {
+		return $this->optionsCapability;
 	}
 
 	public function getPostTypeFromScreen() {
 		$map = $this->getScreenPostTypeMap();
-		return isset($map[$this->screenSlug]) ? get_post_type_object($map[$this->screenSlug]) : NULL;
+		return get_post_type_object(isset($map[$this->screenSlug]) ? $map[$this->screenSlug] : $this->screenSlug);
 	}
 
 	public function getScreenFromPostType($post_type) {
-		return ($screen = array_search(is_object($post_type) ? $post_type->name : $post_type, $this->getScreenPostTypeMap())) !== FALSE ? $screen : '';
+		$name = is_object($post_type) ? $post_type->name : "$post_type";
+		return ($screen = array_search($name, $this->getScreenPostTypeMap())) !== FALSE ? $screen : $name;
 	}
 
 	public function getScreenTemplateMap() {
@@ -92,18 +85,30 @@ class Admin {
 		return isset($map[$this->screenSlug]) ? $map[$this->screenSlug] : 'embed';
 	}
 
+	public function addOptions($capability, $options=[]) {
+		$this->optionsCapability = $capability;
+		add_action('admin_menu', function() use ($options, $capability) {
+			$handle = "$this->slug-settings";
+			add_menu_page("$this->title Settings", $this->title, $capability, $handle, [$this, 'optionsHTML']);
+			foreach($this->getSubMenus() as $submenu) {
+				extract($submenu);
+				add_submenu_page($handle, "$this->title $title", $title, $capability, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
+			}
+		});
+	}
+
 	public function optionsHTML() {
 		global $current_screen;
-		if (!current_user_can($this->optionsCapability)) {
-			wp_die(__('You do not have sufficient permissions to access this page.'));
-		}
 		if (strpos($current_screen->id, "$this->slug-settings") !== FALSE) {
-			$this->screenSlug = 'pages';
+			$this->screenSlug = 'page';
 		}
 		elseif (preg_match("/$this->slug-(.*)-settings$/", $current_screen->id, $matches)) {
 			$this->screenSlug = $matches[1];
 		}
 		else throw new \InvalidArgumentException("Admin screen '$current_screen->id' is invalid.");
+		if (!current_user_can($this->getCapabilityFromScreen())) {
+			wp_die(__('You do not have sufficient permissions to access this page.'));
+		}
 		$this->template($this->getScreenTemplate(), TRUE);
 	}
 
@@ -111,15 +116,28 @@ class Admin {
 		global $current_user, $post;
 		$adminTheme = $this;
 
+		if ($templateName == 'listing' && isset($_GET['id'])) $templateName = 'single';
+
+		$this->templateVars += get_defined_vars();
+
 		if (is_admin()) {
 			$this->templateVars['screenSlug'] = $this->screenSlug;
 			$this->templateVars['embed_url'] = admin_url("$this->screenSlug.php").'?embedded=true';
 			$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
-			$this->templateVars['screenTitle'] = __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
+			$this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
 			$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
+			$this->templateVars['_tpl'] = function($dir) {
+				return function() use ($dir) {
+					extract($this->templateVars);
+					foreach (func_get_args() as $name) {
+						include("$dir/$name.php");
+					}
+				};
+			};
+			$this->templateVars['icon'] = function($name) {
+				include($this->pluginDir."/assets/img/$name.svg"); 
+			};
 		}
-
-		if ($templateName == 'listing' && isset($_GET['id'])) $templateName = 'single';
 
 		extract(apply_filters("{$this->slug}_theme_{$this->screenSlug}_template_vars", $this->templateVars));
 
