@@ -15,7 +15,7 @@ class ContentObjects extends \ArrayObject {
 		// 1. find needle
 		while (($j = strpos($c, $needle, $i)) !== FALSE) {
 			// 2. find opening tag
-			$k = strpos(substr($c, 0, $j), "<$tagName");
+			$k = $i + strrpos(substr($c, $i, $j), "<$tagName");
 			// 3. find closing tag
 			$l = strpos($c, "</$tagName>", $j) + 7;
 			if ($k !== FALSE && $l !== FALSE) {
