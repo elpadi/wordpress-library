@@ -15,6 +15,10 @@ class Assets {
 		$this->assetPath = $assetPath;
 	}
 
+	public function getUrl() {
+		return "$this->baseUri/$this->assetPath";
+	}
+
 	public function asset($path, $callback, $ext='', $folder='', $deps=[], $enqueue=true) {
 		$handle = $this->prefix.'_'.str_replace('/', '-', $path);
 		call_user_func(
