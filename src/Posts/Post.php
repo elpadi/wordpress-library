@@ -8,6 +8,10 @@ class Post {
 	protected $autoCreate = FALSE;
 
 	public function __construct($value=NULL, $type='post', $title='', $slug='', $content='') {
+		if (!$value) {
+			return new \WP_Post(1);
+		}
+
 		if (is_numeric($value)) $post = get_post($value);
 		if (is_string($value)) $post = get_page_by_path($value, OBJECT, $type);
 		if (is_object($value)) $post = $value;
@@ -18,9 +22,9 @@ class Post {
 		}
 		else {
 			if ($this->autoCreate && !empty($title) && $this->isExistingPost() == FALSE) {
-				$this->create($title, $slug, $type, $content);
+				$id = $this->create($title, $slug, $type, $content);
 			}
-			else $this->post = new \WP_Post($id);
+			else $this->post = new \WP_Post($value);
 		}
 	}
 
