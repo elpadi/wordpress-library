@@ -26,7 +26,7 @@ class Assets {
 			$handle,
 			"$this->baseUri/$this->assetPath/$folder/$path.$ext",
 			$deps,
-			filemtime("$this->baseDir/$this->assetPath/$folder/$path.$ext")
+			filemtime(realpath("$this->baseDir/$this->assetPath/$folder/$path.$ext"))
 		);
 		return $handle;
 	}
@@ -38,7 +38,7 @@ class Assets {
 			$handle,
 			"$this->baseUri/$this->assetPath/$path",
 			$deps,
-			filemtime("$this->baseDir/$this->assetPath/$path")
+			filemtime(realpath("$this->baseDir/$this->assetPath/$path"))
 		);
 	}
 
