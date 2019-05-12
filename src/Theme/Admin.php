@@ -126,16 +126,27 @@ class Admin {
 			$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
 			$this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
 			$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
-			$this->templateVars['_tpl'] = function($dir) {
-				return function() use ($dir) {
-					extract($this->templateVars);
-					foreach (func_get_args() as $name) {
-						include("$dir/$name.php");
+			$this->templateVars['_tpl'] = function($dir, $vars=[]) {
+				return function() use ($dir, $vars) {
+					extract(array_merge($this->templateVars, $vars));
+					foreach (func_get_args() as $arg) {
+						if (is_string($arg)) $names[] = $arg;
+						if (is_array($arg)) extract($arg);
 					}
+					foreach ($names as $name) include("$dir/$name.php");
 				};
 			};
-			$this->templateVars['icon'] = function($name) {
-				include($this->pluginDir."/assets/img/$name.svg"); 
+			$this->templateVars['icon'] = function($name, $print=TRUE) {
+				$html = '';
+				if ($h = fopen($this->pluginDir."/assets/img/$name.svg", 'r')) {
+					while ($l = fgets($h)) {
+						if (strpos($l, '<?') !== FALSE) continue; // skip doctype
+						$html .= $l;
+					}
+					fclose($h);
+				}
+				if ($print) echo $html;
+				return $html;
 			};
 		}
 
