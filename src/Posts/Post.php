@@ -4,6 +4,7 @@ namespace WordpressLib\Posts;
 class Post {
 
 	protected $post;
+	protected $terms;
 
 	protected $autoCreate = FALSE;
 
@@ -48,25 +49,24 @@ class Post {
 		return $this->post && $this->post->ID;
 	}
 
-	public function generateFields($title, $slug, $type, $content) {
-		$fields = [
-			'post_title' => $title,
-			'post_status' => 'publish',
-			'post_type' => $type,
-		];
-
-		if (!empty($slug)) $fields['post_name'] = $slug;
-		if (is_string($content)) $fields['post_content'] = $content;
-
-		return $fields;
+	public function updateField($name, $value) {
+		if (isset($this->post->$name)) $this->post->$name = $value;
+		else throw new \InvalidArgumentException("Invalid post field $name.");
 	}
 
-	public function create($title, $slug='', $type='post', $content='') {
-		$id = wp_insert_post(
-			$this->generateFields($title, $slug, $type, $content),
-			TRUE
-		);
+	public function updateFields($updates) {
+		foreach ($updates as $key => $val) $this->updateField($key, $val);
+	}
 
+	public function updateTerms($taxonomy, $terms) {
+		$this->terms[$taxonomy] = $terms;
+	}
+
+	public function save() {
+		$data = (array)$this->post;
+		$data['tax_input'] = $this->terms;
+
+		$id = wp_insert_post($data);
 		if (is_wp_error($id)) {
 			if (WP_DEBUG) {
 				var_dump(__FILE__.":".__LINE__." - ".__METHOD__, $id);
@@ -75,45 +75,51 @@ class Post {
 		else {
 			$this->post = get_post($id);
 		}
-
 		return $id;
 	}
 
-	public function update($title, $slug, $content=NULL) {
+	public function create($title=NULL, $slug=NULL, $type=NULL, $content=NULL) {
+		if ($title !== NULL) {
+			throw new \BadMethodCallException("Arguments to this method are deprecated.");
+		}
+		if ($slug !== NULL) {
+			throw new \BadMethodCallException("Arguments to this method are deprecated.");
+		}
+		if ($type !== NULL) {
+			throw new \BadMethodCallException("Arguments to this method are deprecated.");
+		}
+		if ($content !== NULL) {
+			throw new \BadMethodCallException("Arguments to this method are deprecated.");
+		}
+		return $this->save();
+	}
+
+	public function update($title=NULL, $slug=NULL, $content=NULL) {
+		if ($title !== NULL) {
+			throw new \BadMethodCallException("Arguments to this method are deprecated.");
+		}
+		if ($slug !== NULL) {
+			throw new \BadMethodCallException("Arguments to this method are deprecated.");
+		}
+		if ($content !== NULL) {
+			throw new \BadMethodCallException("Arguments to this method are deprecated.");
+		}
 		if ($this->isExistingPost() == FALSE) {
 			throw new \BadMethodCallException("Cannot update a non-existing post.");
 		}
-
-		$fields = $this->generateFields($title, $slug, $this->post->post_type, $content);
-		$fields['ID'] = $this->post->ID;
-
-		$id = wp_insert_post($fields, TRUE);
-
-		if (is_wp_error($id)) {
-			if (WP_DEBUG) {
-				var_dump(__FILE__.":".__LINE__." - ".__METHOD__, $id);
-			}
-		}
-		else {
-			$this->post = get_post($id);
-		}
-
-		return $id;
+		return $this->save();
 	}
 
 	public function delete() {
 		if ($this->isExistingPost() == FALSE) {
 			throw new \BadMethodCallException("Cannot delete a non-existing post.");
 		}
-
 		$post = wp_delete_post($this->post->ID);
-		
 		if ($post == NULL) {
 			if (WP_DEBUG) {
 				var_dump(__FILE__.":".__LINE__." - ".__METHOD__, $id);
 			}
 		}
-
 		return $post;
 	}
 
