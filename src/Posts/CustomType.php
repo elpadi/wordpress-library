@@ -6,7 +6,7 @@ class CustomType {
 	protected static $supports = ['title','editor','thumbnail'];
 
 	public function __construct($slug, $singular='', $plural='') {
-		if (empty($singular)) $singular = ucwords(str_replace('-', ' ', $slug));
+		if (empty($singular)) $singular = ucwords(str_replace(['_','-'], ' ', $slug));
 		if (empty($plural)) $plural = $singular.'s';
 		$this->slug = $slug;
 		$this->singular = $singular;
