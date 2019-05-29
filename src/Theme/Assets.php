@@ -13,10 +13,21 @@ class Assets {
 		$this->baseUri = $baseUri;
 		$this->baseDir = $baseDir;
 		$this->assetPath = $assetPath;
+		if (!is_dir($this->getDir())) {
+			throw new \RuntimeException("Asset directory does not exist.");
+		}
+	}
+
+	public function changePath($assetPath) {
+		return new static($this->prefix, $this->baseUri, $this->baseDir, $assetPath);
 	}
 
 	public function getUrl() {
 		return "$this->baseUri/$this->assetPath";
+	}
+
+	public function getDir() {
+		return "$this->baseDir/$this->assetPath";
 	}
 
 	public function asset($path, $callback, $ext='', $folder='', $deps=[], $enqueue=true) {
