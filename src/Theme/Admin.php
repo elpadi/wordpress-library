@@ -82,7 +82,10 @@ class Admin {
 
 	public function getScreenTemplate() {
 		$map = $this->getScreenTemplateMap();
-		return isset($map[$this->screenSlug]) ? $map[$this->screenSlug] : 'embed';
+		if (isset($map[$this->screenSlug])) {
+			return $map[$this->screenSlug];
+		}
+		throw new \BadMethodCallException("Missing template for the section '$this->screenSlug'.");
 	}
 
 	public function addOptions($capability, $options=[]) {
