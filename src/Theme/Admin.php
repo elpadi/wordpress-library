@@ -151,6 +151,7 @@ class Admin {
 				if ($print) echo $html;
 				return $html;
 			};
+			$this->templateVars['languages'] = apply_filters('wpml_active_languages', []);
 		}
 
 		extract(apply_filters("{$this->slug}_theme_{$this->screenSlug}_template_vars", $this->templateVars));
