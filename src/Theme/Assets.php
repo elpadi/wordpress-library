@@ -13,8 +13,8 @@ class Assets {
 		$this->baseUri = $baseUri;
 		$this->baseDir = $baseDir;
 		$this->assetPath = $assetPath;
-		if (!is_dir($this->getDir())) {
-			throw new \RuntimeException("Asset directory does not exist.");
+		if (!is_dir($dir = $this->getDir())) {
+			throw new \RuntimeException("Asset directory $dir does not exist.");
 		}
 	}
 
