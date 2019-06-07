@@ -21,21 +21,31 @@ class Admin {
 	public function adminInit() {
 	}
 
-	public function isEmbedded() {
-		return isset($_GET['embedded']);
-	}
-
-	public function isThemeScreen() {
-		global $current_screen;
-		return strpos($current_screen->base, $this->slug) !== FALSE || $this->isEmbedded();
-	}
-
 	public function isEmbedScreen() {
 		global $current_screen;
 		return (
 			preg_match("/$this->slug-(.*)-settings$/", $current_screen->id, $matches)
 			&& in_array($matches[1], ['page','gallery','users'])
 		);
+	}
+
+	public function isEmbedded() {
+		return isset($_GET['embedded']);
+	}
+
+	public function isEditor() {
+		foreach (['post','post-new'] as $s)
+			if (strpos($_SERVER['REQUEST_URI'], "wp-admin/$s.php") !== FALSE) return TRUE;
+		return FALSE;
+	}
+
+	public function isTomeAdminScreen() {
+		if (strpos($_SERVER['REQUEST_URI'], 'wp-admin/admin.php?page=tome-admin-settings')) return TRUE;
+		return preg_match('/wp-admin\/admin\.php\?page=tome-admin(-[a-z]+)-settings$/', $_SERVER['REQUEST_URI']);
+	}
+
+	public function isThemeScreen() {
+		return $this->isTomeAdminScreen() || $this->isEmbedded() || $this->isEditor();
 	}
 
 	protected function getBodyClass() {
@@ -151,7 +161,7 @@ class Admin {
 				if ($print) echo $html;
 				return $html;
 			};
-			$this->templateVars['languages'] = apply_filters('wpml_active_languages', []);
+			$this->templateVars['activeLanguage'] = apply_filters('wpml_current_language', 'en');
 		}
 
 		extract(apply_filters("{$this->slug}_theme_{$this->screenSlug}_template_vars", $this->templateVars));
