@@ -19,6 +19,8 @@ class Admin {
 	}
 
 	public function adminInit() {
+		$vars = apply_filters("{$this->slug}_append_template_vars", []);
+		$this->templateVars = array_merge($this->templateVars, $vars);
 	}
 
 	public function isEmbedScreen() {
@@ -125,6 +127,30 @@ class Admin {
 		$this->template($this->getScreenTemplate(), TRUE);
 	}
 
+	public function icon($name, $print=TRUE) {
+		$html = '';
+		if ($h = fopen($this->pluginDir."/assets/img/$name.svg", 'r')) {
+			while ($l = fgets($h)) {
+				if (strpos($l, '<?') !== FALSE) continue; // skip doctype
+				$html .= $l;
+			}
+			fclose($h);
+		}
+		if ($print) echo $html;
+		return $html;
+	}
+
+	public function getTemplateLoader($dir, $vars=[]) {
+		return function() use ($dir, $vars) {
+			extract(array_merge($this->templateVars, $vars));
+			foreach (func_get_args() as $arg) {
+				if (is_string($arg)) $_filenames[] = $arg;
+				if (is_array($arg)) extract($arg);
+			}
+			foreach ($_filenames as $_filename) include("$dir/$_filename.php");
+		};
+	}
+
 	public function template($templateName, $isGlobal=FALSE) {
 		global $current_user, $post;
 		$adminTheme = $this;
@@ -139,27 +165,10 @@ class Admin {
 			$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
 			$this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
 			$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
-			$this->templateVars['_tpl'] = function($dir, $vars=[]) {
-				return function() use ($dir, $vars) {
-					extract(array_merge($this->templateVars, $vars));
-					foreach (func_get_args() as $arg) {
-						if (is_string($arg)) $names[] = $arg;
-						if (is_array($arg)) extract($arg);
-					}
-					foreach ($names as $name) include("$dir/$name.php");
-				};
-			};
+			$this->templateVars['_tpl'] = function($dir, $vars=[]) { return $this->getTemplateLoader($dir, $vars); };
+			$this->templateVars['tpl'] = $this->getTemplateLoader($this->pluginDir."/templates");
 			$this->templateVars['icon'] = function($name, $print=TRUE) {
-				$html = '';
-				if ($h = fopen($this->pluginDir."/assets/img/$name.svg", 'r')) {
-					while ($l = fgets($h)) {
-						if (strpos($l, '<?') !== FALSE) continue; // skip doctype
-						$html .= $l;
-					}
-					fclose($h);
-				}
-				if ($print) echo $html;
-				return $html;
+				return $this->icon($name, $print);
 			};
 			$this->templateVars['activeLanguage'] = apply_filters('wpml_current_language', 'en');
 		}
