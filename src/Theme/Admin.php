@@ -170,6 +170,9 @@ class Admin {
 			$this->templateVars['icon'] = function($name, $print=TRUE) {
 				return $this->icon($name, $print);
 			};
+			$this->templateVars['dashicon'] = function($name) {
+				return sprintf('<i class="dashicons dashicons-%s"></i>', $name);
+			};
 			$this->templateVars['activeLanguage'] = apply_filters('wpml_current_language', 'en');
 		}
 
