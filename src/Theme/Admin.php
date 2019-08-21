@@ -183,7 +183,7 @@ class Admin {
 			include($this->pluginDir."/templates/global/before-content.php"); 
 		}
 
-		include($this->pluginDir."/templates/content/$templateName.php"); 
+		include($this->pluginDir.'/templates/content/'.($isGlobal ? $this->screenSlug : $templateName).'.php'); 
 
 		if ($isGlobal) {
 			include($this->pluginDir."/templates/global/after-content.php"); 
