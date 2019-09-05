@@ -43,7 +43,7 @@ class Admin {
 
 	public function isTomeAdminScreen() {
 		if (strpos($_SERVER['REQUEST_URI'], 'wp-admin/admin.php?page=tome-admin-settings')) return TRUE;
-		return preg_match('/wp-admin\/admin\.php\?page=tome-admin(-[a-z]+)-settings$/', $_SERVER['REQUEST_URI']);
+		return preg_match('/wp-admin\/admin\.php\?page=tome-admin(-[a-z]+)-settings/', $_SERVER['REQUEST_URI']);
 	}
 
 	public function isThemeScreen() {
@@ -69,7 +69,7 @@ class Admin {
 	}
 
 	public function getScreenPostTypeMap() {
-		return [];
+		return ['blog' => 'post'];
 	}
 
 	public function getCapabilityFromScreen() {
