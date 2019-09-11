@@ -5,6 +5,8 @@ use WordpressLib\Posts\CustomTaxonomy;
 
 class Admin {
 
+	const DASHBOARD_CAPABILITY = 'edit_posts';
+
 	public function __construct($slug, $title, $pluginDir, $templateVars=[]) {
 		$this->slug = $slug;
 		$this->title = $title;
@@ -73,7 +75,10 @@ class Admin {
 	}
 
 	public function getCapabilityFromScreen() {
-		return $this->optionsCapability;
+		foreach($this->getSubMenus() as $submenu) {
+			if ($submenu->slug == $this->screenSlug) return $submenu['capability'];
+		}
+		return self::DASHBOARD_CAPABILITY;
 	}
 
 	public function getPostTypeFromScreen() {
@@ -100,11 +105,10 @@ class Admin {
 		throw new \BadMethodCallException("Missing template for the section '$this->screenSlug'.");
 	}
 
-	public function addOptions($capability, $options=[]) {
-		$this->optionsCapability = $capability;
-		add_action('admin_menu', function() use ($options, $capability) {
+	public function addOptions() {
+		add_action('admin_menu', function() {
 			$handle = "$this->slug-settings";
-			add_menu_page("$this->title Settings", $this->title, $capability, $handle, [$this, 'optionsHTML']);
+			add_menu_page("$this->title Settings", $this->title, self::DASHBOARD_CAPABILITY, $handle, [$this, 'optionsHTML']);
 			foreach($this->getSubMenus() as $submenu) {
 				extract($submenu);
 				add_submenu_page($handle, "$this->title $title", $title, $capability, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
