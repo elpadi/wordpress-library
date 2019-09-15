@@ -76,7 +76,7 @@ class Admin {
 
 	public function getCapabilityFromScreen() {
 		foreach($this->getSubMenus() as $submenu) {
-			if ($submenu->slug == $this->screenSlug) return $submenu['capability'];
+			if ($submenu['slug'] == $this->screenSlug) return $submenu['capability'];
 		}
 		return self::DASHBOARD_CAPABILITY;
 	}
