@@ -5,7 +5,7 @@ use WordpressLib\Posts\CustomTaxonomy;
 
 class Admin {
 
-	const DASHBOARD_CAPABILITY = 'edit_posts';
+	const DASHBOARD_CAPABILITY = 'publish_posts';
 
 	public function __construct($slug, $title, $pluginDir, $templateVars=[]) {
 		$this->slug = $slug;
@@ -75,9 +75,11 @@ class Admin {
 	}
 
 	public function getCapabilityFromScreen() {
+		/*
 		foreach($this->getSubMenus() as $submenu) {
 			if ($submenu['slug'] == $this->screenSlug) return $submenu['capability'];
 		}
+		 */
 		return self::DASHBOARD_CAPABILITY;
 	}
 
@@ -111,7 +113,7 @@ class Admin {
 			add_menu_page("$this->title Settings", $this->title, self::DASHBOARD_CAPABILITY, $handle, [$this, 'optionsHTML']);
 			foreach($this->getSubMenus() as $submenu) {
 				extract($submenu);
-				add_submenu_page($handle, "$this->title $title", $title, $capability, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
+				add_submenu_page($handle, "$this->title $title", $title, self::DASHBOARD_CAPABILITY/*$capability*/, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
 			}
 		});
 	}
@@ -125,7 +127,7 @@ class Admin {
 			$this->screenSlug = $matches[1];
 		}
 		else throw new \InvalidArgumentException("Admin screen '$current_screen->id' is invalid.");
-		if (!current_user_can($this->getCapabilityFromScreen())) {
+		if (!current_user_can(self::DASHBOARD_CAPABILITY/*$this->getCapabilityFromScreen()*/)) {
 			wp_die(__('You do not have sufficient permissions to access this page.'));
 		}
 		$this->template($this->getScreenTemplate(), TRUE);
