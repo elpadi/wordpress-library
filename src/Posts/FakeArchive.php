@@ -14,8 +14,14 @@ abstract class FakeArchive extends FakePage {
 		add_filter('get_the_archive_title', function($t) {
 			return $this->title;
 		}, 100);
+	}
 
-		// TODO: enable paging
+	public function addRewriteRules() {
+		add_rewrite_rule(
+			sprintf('%s/page/([0-9]+)/?$', $this->slug),
+			"index.php?$this->queryVar=$this->slug&paged=\$matches[1]",
+			'top'
+		);
 	}
 
 	protected function createContent() {

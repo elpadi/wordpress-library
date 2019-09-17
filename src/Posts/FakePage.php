@@ -39,7 +39,7 @@ abstract class FakePage {
 		return $template;
 	}
 
-	public function addRewriteRules($rules) {
+	public function addRewriteRules() {
 		add_rewrite_tag("%$this->queryVar%", '([^&]+)');
 		add_rewrite_rule(
 			sprintf('%s/?$', $this->slug),
@@ -53,9 +53,10 @@ abstract class FakePage {
 		return $vars;
 	}
 
-	public function isBeingRequested() {
+	public function isBeingRequested($query=NULL) {
 		global $wp_query;
-		return isset($wp_query->query_vars[$this->queryVar]) && $wp_query->query_vars[$this->queryVar] == $this->slug;
+		if (!$query) $query = $wp_query;
+		return isset($query->query_vars[$this->queryVar]) && $query->query_vars[$this->queryVar] == $this->slug;
 	}
 
 	public function replaceContent($s) {
