@@ -17,6 +17,7 @@ abstract class FakeArchive extends FakePage {
 	}
 
 	public function addRewriteRules() {
+		parent::addRewriteRules();
 		add_rewrite_rule(
 			sprintf('%s/page/([0-9]+)/?$', $this->slug),
 			"index.php?$this->queryVar=$this->slug&paged=\$matches[1]",
