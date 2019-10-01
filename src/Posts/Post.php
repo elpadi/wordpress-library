@@ -37,6 +37,10 @@ class Post {
 		return get_permalink($this->post);
 	}
 
+	public function getType() {
+		return $this->post->post_type;
+	}
+
 	public function getId() {
 		return $this->post->ID;
 	}
@@ -117,7 +121,7 @@ class Post {
 		$post = wp_delete_post($this->post->ID);
 		if ($post == NULL) {
 			if (WP_DEBUG) {
-				var_dump(__FILE__.":".__LINE__." - ".__METHOD__, $id);
+				var_dump(__FILE__.":".__LINE__." - ".__METHOD__, $this);
 			}
 		}
 		return $post;
