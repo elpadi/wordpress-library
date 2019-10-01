@@ -3,8 +3,8 @@ namespace WordpressLib\Customizer;
 
 class Control {
 
-	public static function getValue($slug, $type) {
-		$value = get_theme_mod($slug);
+	public static function getValue($slug, $type, $optionType) {
+		$value = $optionType == 'theme_mod' ? get_theme_mod($slug) : get_option($slug);
 
 		if ($value) switch ($type) {
 			case 'page': return get_post($value);

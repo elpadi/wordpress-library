@@ -11,7 +11,7 @@ class Repeater {
 	}
 
 	public function getFieldValue($slug, $type) {
-		return Control::getValue("{$this->sectionSlug}_$slug", $type);
+		return Control::getValue("{$this->sectionSlug}_$slug", $type, $this->options['optionType']);
 	}
 
 	public function getValues() {
@@ -36,7 +36,7 @@ class Repeater {
 				$slug = $f[1];
 				$title = isset($f[2]) ? $f[2] : ucfirst($slug);
 				$settingSlug = "{$this->sectionSlug}_{$i}_{$slug}";
-				$wp_customize->add_setting($settingSlug);
+				$wp_customize->add_setting($settingSlug, ['type' => $repeater_optionType]);
 				new Control($wp_customize, $this->sectionSlug, $settingSlug, "$repeater_title $i ".$title, $type);
 			}
 		}
