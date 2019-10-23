@@ -5,12 +5,13 @@ use Functional as F;
 
 class Field {
 
-	public function __construct($sectionSlug, $type, $slug, $title, $optionType) {
+	public function __construct($sectionSlug, $type, $slug, $title, $optionType, $attrs) {
 		$this->type = $type;
 		$this->slug = $slug;
 		$this->title = $title;
 		$this->sectionSlug = $sectionSlug;
 		$this->optionType = $optionType;
+		$this->attrs = $attrs;
 		$this->settingSlug = $this->sectionSlug.'_'.$this->slug;
 	}
 
@@ -20,7 +21,7 @@ class Field {
 
 	public function register($wp_customize) {
 		$wp_customize->add_setting($this->settingSlug, ['type' => $this->optionType]);
-		new Control($wp_customize, $this->sectionSlug, $this->settingSlug, $this->title, $this->type);
+		new Control($wp_customize, $this->sectionSlug, $this->settingSlug, $this->title, $this->type, $this->attrs);
 	}
 
 }

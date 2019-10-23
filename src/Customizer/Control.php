@@ -14,11 +14,12 @@ class Control {
 		return $value;
 	}
 
-	public function __construct($wp_customize, $sectionSlug, $slug, $title, $type) {
+	public function __construct($wp_customize, $sectionSlug, $slug, $title, $type, $attrs) {
 		$this->sectionSlug = $sectionSlug;
 		$this->slug = $slug;
 		$this->title = $title;
 		$this->type = $type;
+		$this->attrs = $attrs;
 
 		$fn = is_callable([$this, $type]) ? $type : 'add';
 		$this->$fn($wp_customize);
@@ -29,6 +30,7 @@ class Control {
 			'type' => isset($this->fieldType) ? $this->fieldType : $this->type,
 			'section' => $this->sectionSlug,
 			'label' => $this->title,
+			'input_attrs' => $this->attrs,
 		]);
 	}
 

@@ -37,7 +37,7 @@ class Repeater {
 				$title = isset($f[2]) ? $f[2] : ucfirst($slug);
 				$settingSlug = "{$this->sectionSlug}_{$i}_{$slug}";
 				$wp_customize->add_setting($settingSlug, ['type' => $repeater_optionType]);
-				new Control($wp_customize, $this->sectionSlug, $settingSlug, "$repeater_title $i ".$title, $type);
+				new Control($wp_customize, $this->sectionSlug, $settingSlug, "$repeater_title $i ".$title, $type, []);
 			}
 		}
 	}

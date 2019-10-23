@@ -23,7 +23,8 @@ class Section {
 			$type = $f[0];
 			$slug = $f[1];
 			$title = isset($f[2]) ? $f[2] : ucfirst($slug);
-			$this->fields[] = new Field($this->slug, $type, $slug, $title, $optionType);
+			$attrs = isset($f[3]) ? $f[3] : [];
+			$this->fields[] = new Field($this->slug, $type, $slug, $title, $optionType, $attrs);
 		}
 		return $this;
 	}
@@ -46,8 +47,8 @@ class Section {
 
 	public function register($wp_customize) {
 		$wp_customize->add_section($this->slug, ['title' => $this->title]);
-		F\invoke($this->repeaters, 'register', [$wp_customize]);
 		F\invoke($this->fields, 'register', [$wp_customize]);
+		F\invoke($this->repeaters, 'register', [$wp_customize]);
 	}
 
 }
