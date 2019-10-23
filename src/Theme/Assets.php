@@ -18,8 +18,14 @@ class Assets {
 		}
 	}
 
-	public function changePath($assetPath) {
-		return new static($this->prefix, $this->baseUri, $this->baseDir, $assetPath);
+	public function changePath($assetPath, $baseUri='') {
+		$isAbsPath = $assetPath[0] == '/';
+		return new static(
+			$this->prefix,
+			$isAbsPath ? $baseUri : $this->baseUri,
+			$isAbsPath ? $assetPath : $this->baseDir,
+			$isAbsPath ? '.' : $assetPath
+		);
 	}
 
 	public function getUrl() {

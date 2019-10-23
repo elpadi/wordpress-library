@@ -49,6 +49,7 @@ class Section {
 		$wp_customize->add_section($this->slug, ['title' => $this->title]);
 		F\invoke($this->fields, 'register', [$wp_customize]);
 		F\invoke($this->repeaters, 'register', [$wp_customize]);
+		F\invoke($this->fields, 'register', [$wp_customize]);
 	}
 
 }
