@@ -22,9 +22,10 @@ class Section {
 		foreach ($fields as $f) {
 			$type = $f[0];
 			$slug = $f[1];
-			$title = isset($f[2]) ? $f[2] : ucfirst($slug);
+			$title = isset($f[2]) ? $f[2] : ucwords(str_replace(['-','_'], ' ', $slug));
 			$attrs = isset($f[3]) ? $f[3] : [];
-			$this->fields[] = new Field($this->slug, $type, $slug, $title, $optionType, $attrs);
+			$default = isset($f[4]) ? $f[4] : '';
+			$this->fields[] = new Field($this->slug, $type, $slug, $title, $optionType, $attrs, $default);
 		}
 		return $this;
 	}
@@ -49,7 +50,6 @@ class Section {
 		$wp_customize->add_section($this->slug, ['title' => $this->title]);
 		F\invoke($this->fields, 'register', [$wp_customize]);
 		F\invoke($this->repeaters, 'register', [$wp_customize]);
-		F\invoke($this->fields, 'register', [$wp_customize]);
 	}
 
 }
