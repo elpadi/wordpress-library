@@ -25,18 +25,6 @@ class Admin {
 		$this->templateVars = array_merge($this->templateVars, $vars);
 	}
 
-	public function isEmbedScreen() {
-		global $current_screen;
-		return (
-			preg_match("/$this->slug-(.*)-settings$/", $current_screen->id, $matches)
-			&& in_array($matches[1], ['page','gallery','users'])
-		);
-	}
-
-	public function isEmbedded() {
-		return isset($_GET['embedded']);
-	}
-
 	public function isEditor() {
 		foreach (['post','post-new'] as $s)
 			if (strpos($_SERVER['REQUEST_URI'], "wp-admin/$s.php") !== FALSE) return TRUE;
@@ -49,7 +37,7 @@ class Admin {
 	}
 
 	public function isThemeScreen() {
-		return $this->isTomeAdminScreen() || $this->isEmbedded() || $this->isEditor();
+		return $this->isTomeAdminScreen() || $this->isEditor();
 	}
 
 	protected function getBodyClass() {
@@ -60,9 +48,7 @@ class Admin {
 		$c = [];
 		if ($this->isThemeScreen()) {
 			$c[] = $this->getBodyClass();
-			if ($this->isEmbedScreen()) $c[] = "$this->slug--embed";
 		}
-		if ($this->isEmbedded()) $c[] = "$this->slug--embedded";
 		return empty($c) ? $classes : $classes.' '.implode(' ', $c);
 	}
 
@@ -93,20 +79,6 @@ class Admin {
 		return ($screen = array_search($name, $this->getScreenPostTypeMap())) !== FALSE ? $screen : $name;
 	}
 
-	public function getScreenTemplateMap() {
-		$map = [];
-		foreach (['page','post'] as $s) $map[$s] = 'listing';
-		return $map;
-	}
-
-	public function getScreenTemplate() {
-		$map = $this->getScreenTemplateMap();
-		if (isset($map[$this->screenSlug])) {
-			return $map[$this->screenSlug];
-		}
-		throw new \BadMethodCallException("Missing template for the section '$this->screenSlug'.");
-	}
-
 	public function addOptions() {
 		add_action('admin_menu', function() {
 			$handle = "$this->slug-settings";
@@ -121,7 +93,7 @@ class Admin {
 	public function optionsHTML() {
 		global $current_screen;
 		if (strpos($current_screen->id, "$this->slug-settings") !== FALSE) {
-			$this->screenSlug = 'page';
+			$this->screenSlug = 'dashboard';
 		}
 		elseif (preg_match("/$this->slug-(.*)-settings$/", $current_screen->id, $matches)) {
 			$this->screenSlug = $matches[1];
@@ -130,7 +102,7 @@ class Admin {
 		if (!current_user_can(self::DASHBOARD_CAPABILITY/*$this->getCapabilityFromScreen()*/)) {
 			wp_die(__('You do not have sufficient permissions to access this page.'));
 		}
-		$this->template($this->getScreenTemplate(), TRUE);
+		$this->template($this->screenSlug, TRUE);
 	}
 
 	public function icon($name, $print=TRUE) {
