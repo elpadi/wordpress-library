@@ -129,20 +129,20 @@ class Admin {
 		};
 	}
 
-	public function template($templateName, $isGlobal=FALSE) {
+	public function template($templateName, $isGlobal=FALSE, $isPartial=FALSE, $vars=[]) {
 		global $current_user, $post;
 		$adminTheme = $this;
-
-		if ($templateName == 'listing' && isset($_GET['id'])) $templateName = 'single';
 
 		$this->templateVars += get_defined_vars();
 
 		if (is_admin()) {
-			$this->templateVars['screenSlug'] = $this->screenSlug;
-			$this->templateVars['embed_url'] = admin_url("$this->screenSlug.php").'?embedded=true';
-			$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
-			$this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
-			$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
+			if (!$isPartial) {
+				$this->templateVars['screenSlug'] = $this->screenSlug;
+				$this->templateVars['embed_url'] = admin_url("$this->screenSlug.php").'?embedded=true';
+				$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
+				$this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
+				$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
+			}
 			$this->templateVars['_tpl'] = function($dir, $vars=[]) { return $this->getTemplateLoader($dir, $vars); };
 			$this->templateVars['tpl'] = $this->getTemplateLoader($this->pluginDir."/templates");
 			$this->templateVars['icon'] = function($name, $print=TRUE) {
@@ -154,18 +154,33 @@ class Admin {
 			$this->templateVars['activeLanguage'] = apply_filters('wpml_current_language', 'en');
 		}
 
-		extract(apply_filters("{$this->slug}_theme_{$this->screenSlug}_template_vars", $this->templateVars));
+		if ($isPartial) {
+			extract(array_merge($this->templateVars, $vars));
+		}
+		else {
+			extract(apply_filters("{$this->slug}_theme_{$this->screenSlug}_template_vars", array_merge($this->templateVars, $vars)));
+		}
 
 		if ($isGlobal) {
 			echo '<style>html { padding-top: 0 !important; }</style>';
 			include($this->pluginDir."/templates/global/before-content.php"); 
 		}
 
-		include($this->pluginDir.'/templates/content/'.($isGlobal ? $this->screenSlug : $templateName).'.php'); 
+		$path = $this->pluginDir.'/templates/'.($isPartial ? 'partial' : 'content').'/'.($isGlobal ? $this->screenSlug : $templateName).'.php';
+		if (!is_readable($path)) {
+			throw new \InvalidArgumentException("Could not find the template at $templateName.");
+		}
+		include($path); 
 
 		if ($isGlobal) {
 			include($this->pluginDir."/templates/global/after-content.php"); 
 		}
+	}
+
+	public function partialTemplateString($templateName, $vars=[]) {
+		ob_start();
+		$this->template($templateName, FALSE, TRUE, $vars);
+		return ob_get_clean();
 	}
 
 	public function registerAssets($fn) {
