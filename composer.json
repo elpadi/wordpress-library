@@ -19,7 +19,7 @@
 		}
 	},
 	"require": {
-		"lstrojny/functional-php": "~1.0",
-		"symfony/http-foundation": "^4.2"
+		"lstrojny/functional-php": "^1.0",
+		"symfony/http-foundation": "^5.1"
 	}
 }
