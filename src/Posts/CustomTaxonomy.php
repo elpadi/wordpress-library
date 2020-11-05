@@ -72,11 +72,14 @@ class CustomTaxonomy {
 		return term_exists($term, $this->slug);
 	}
 
-	public function getTerms() {
-		$terms = get_terms(['taxonomy' => $this->slug, 'hide_empty' => false]);
+	public function getTerms($postIDs=[]) {
+		$terms = get_terms(['taxonomy' => $this->slug, 'hide_empty' => false, 'object_ids' => $postIDs]);
 		if (is_wp_error($terms)) {
-			var_dump($this, $terms->get_error_messages());
-			exit();
+			if (\WP_DEBUG) {
+				var_dump($this, $terms->get_error_messages());
+				exit();
+			}
+			return [];
 		}
 		return $terms;
 	}

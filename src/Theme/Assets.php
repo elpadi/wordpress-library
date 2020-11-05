@@ -13,6 +13,27 @@ class Assets {
 		$this->baseUri = $baseUri;
 		$this->baseDir = $baseDir;
 		$this->assetPath = $assetPath;
+		if (!is_dir($dir = $this->getDir())) {
+			throw new \RuntimeException("Asset directory $dir does not exist.");
+		}
+	}
+
+	public function changePath($assetPath, $baseUri='') {
+		$isAbsPath = $assetPath[0] == '/';
+		return new static(
+			$this->prefix,
+			$isAbsPath ? $baseUri : $this->baseUri,
+			$isAbsPath ? $assetPath : $this->baseDir,
+			$isAbsPath ? '.' : $assetPath
+		);
+	}
+
+	public function getUrl() {
+		return "$this->baseUri/$this->assetPath";
+	}
+
+	public function getDir() {
+		return "$this->baseDir/$this->assetPath";
 	}
 
 	public function asset($path, $callback, $ext='', $folder='', $deps=[], $enqueue=true) {
@@ -22,7 +43,7 @@ class Assets {
 			$handle,
 			"$this->baseUri/$this->assetPath/$folder/$path.$ext",
 			$deps,
-			filemtime("$this->baseDir/$this->assetPath/$folder/$path.$ext")
+			filemtime(realpath("$this->baseDir/$this->assetPath/$folder/$path.$ext"))
 		);
 		return $handle;
 	}
@@ -34,7 +55,7 @@ class Assets {
 			$handle,
 			"$this->baseUri/$this->assetPath/$path",
 			$deps,
-			filemtime("$this->baseDir/$this->assetPath/$path")
+			filemtime(realpath("$this->baseDir/$this->assetPath/$path"))
 		);
 	}
 
