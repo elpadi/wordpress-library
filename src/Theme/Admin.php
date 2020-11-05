@@ -136,20 +136,23 @@ class Admin {
 		global $current_user, $post;
 		$adminTheme = $this;
 
+		if ($templateName == 'listing' && isset($_GET['id'])) $templateName = 'single';
+
 		$this->templateVars += get_defined_vars();
 
 		if (is_admin()) {
-			if (!$isPartial) {
-				$this->templateVars['screenSlug'] = $this->screenSlug;
-				$this->templateVars['embed_url'] = admin_url("$this->screenSlug.php").'?embedded=true';
-				$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
-				$this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
-				$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
-			}
+			$this->templateVars['screenSlug'] = $this->screenSlug;
+			$this->templateVars['embed_url'] = admin_url("$this->screenSlug.php").'?embedded=true';
+			$this->templateVars['post_type'] = $this->getPostTypeFromScreen();
+			$this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
+			$this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new \WP_Post(new \stdClass);
 			$this->templateVars['_tpl'] = function($dir, $vars=[]) { return $this->getTemplateLoader($dir, $vars); };
 			$this->templateVars['tpl'] = $this->getTemplateLoader($this->pluginDir."/templates");
 			$this->templateVars['icon'] = function($name, $print=TRUE) {
 				return $this->icon($name, $print);
+			};
+			$this->templateVars['dashicon'] = function($name) {
+				return sprintf('<i class="dashicons dashicons-%s"></i>', $name);
 			};
 			$this->templateVars['activeLanguage'] = apply_filters('wpml_current_language', 'en');
 		}
