@@ -1,13 +1,16 @@
 <?php
+
 namespace WordpressLib\Plugins;
 
-abstract class Plugin {
+abstract class Plugin
+{
 
-	public function __construct() {
-		add_action('init', [$this, 'init']);
-	}
+    public function __construct()
+    {
+        add_action('init', [$this, 'init']);
+    }
 
-	public function init() {
-	}
-
+    public function init()
+    {
+    }
 }

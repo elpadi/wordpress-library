@@ -1,10 +1,11 @@
 <?php
+
 namespace MustUsePlugin;
 
-interface PaginationInterface {
-	
-	const DEFAULT_PAGINATION_SPREAD = 2;
+interface PaginationInterface
+{
+    
+    const DEFAULT_PAGINATION_SPREAD = 2;
 
-	public function pagination($total=-1, $spread=-1);
-
+    public function pagination($total = -1, $spread = -1);
 }
