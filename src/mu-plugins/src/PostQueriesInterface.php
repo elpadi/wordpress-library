@@ -1,8 +1,9 @@
 <?php
+
 namespace MustUsePlugin;
 
-interface PostQueriesInterface {
+interface PostQueriesInterface
+{
 
-	public static function customPostsQuery($ids, $fields);
-
+    public static function customPostsQuery($ids, $fields);
 }
