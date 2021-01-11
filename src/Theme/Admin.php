@@ -7,6 +7,15 @@ use WP_Post;
 use stdClass;
 use InvalidArgumentException;
 
+use function Functional\{
+    first,
+    ary,
+    partial_any,
+    map
+};
+
+use const Functional\…;
+
 class Admin
 {
 
@@ -85,18 +94,30 @@ class Admin
 
     public function getCapabilityFromScreen()
     {
-        /*
-        foreach($this->getSubMenus() as $submenu) {
-            if ($submenu['slug'] == $this->screenSlug) return $submenu['capability'];
-        }
-         */
         return self::DASHBOARD_CAPABILITY;
     }
 
-    public function getPostTypeFromScreen()
+    protected function getPostTypeNameFromScreen(): string
     {
+        if (!isset($this->screenSlug)) {
+            return '';
+        }
         $map = $this->getScreenPostTypeMap();
-        return get_post_type_object(isset($map[$this->screenSlug]) ? $map[$this->screenSlug] : $this->screenSlug);
+        return $map[$this->screenSlug] ?? $this->screenSlug;
+    }
+
+    protected function getPostTypeFromScreen(): ?stdClass
+    {
+        $name = $this->getPostTypeNameFromScreen();
+        return $name ? get_post_type_object($name) : null;
+    }
+
+    protected function getScreenTitle(?stdClass $postType = null): string
+    {
+        if (!$postType && !isset($this->screenSlug)) {
+            return '';
+        }
+        return $postType->label ?? __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
     }
 
     public function getScreenFromPostType($post_type)
@@ -112,7 +133,7 @@ class Admin
             add_menu_page("$this->title Settings", $this->title, self::DASHBOARD_CAPABILITY, $handle, [$this, 'optionsHTML']);
             foreach ($this->getSubMenus() as $submenu) {
                 extract($submenu);
-                add_submenu_page($handle, "$this->title $title", $title, self::DASHBOARD_CAPABILITY/*$capability*/, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
+                add_submenu_page($handle, "$this->title $title", $title, self::DASHBOARD_CAPABILITY, "$this->slug-$slug-settings", [$this, 'optionsHTML']);
             }
         });
     }
@@ -137,7 +158,7 @@ class Admin
     public function optionsHTML()
     {
         $this->fetchScreenSlug();
-        if (!current_user_can(self::DASHBOARD_CAPABILITY/*$this->getCapabilityFromScreen()*/)) {
+        if (!current_user_can(self::DASHBOARD_CAPABILITY)) {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
         $this->template($this->screenSlug, true);
@@ -193,10 +214,9 @@ class Admin
         $this->templateVars += get_defined_vars();
 
         if (is_admin()) {
-            $this->templateVars['screenSlug'] = $this->screenSlug;
-            $this->templateVars['embed_url'] = admin_url("$this->screenSlug.php") . '?embedded=true';
+            $this->templateVars['screenSlug'] = $this->screenSlug ?? '';
             $this->templateVars['post_type'] = $this->getPostTypeFromScreen();
-            $this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
+            $this->templateVars['screenTitle'] = $this->getScreenTitle($this->templateVars['post_type']);
             $this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new WP_Post(new stdClass());
             $this->templateVars['_tpl'] = function ($dir, $vars = []) {
                 return $this->getTemplateLoader($dir, $vars);
@@ -257,5 +277,13 @@ class Admin
     public function registerBlockAssets($fn)
     {
         add_action('enqueue_block_editor_assets', $fn);
+    }
+
+    public function getReadableTemplate(string $tokenizedPath, ...$names): string
+    {
+        return first(
+            map($names, partial_any('str_replace', '#', …, $tokenizedPath)),
+            ary('is_readable', 1)
+        );
     }
 }
