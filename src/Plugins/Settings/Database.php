@@ -3,6 +3,8 @@
 namespace WordpressLib\Plugins\Settings;
 
 use Functional as F;
+use Sqlite3;
+use RuntimeException;
 
 class Database
 {
@@ -19,7 +21,7 @@ class Database
         }
 
         $this->filepath = $filepath;
-        $this->handle = new() \SQLite3($this->filepath);
+        $this->handle = new SQLite3($this->filepath);
         $this->tables = $tables;
         foreach ($tables as $name => $schema) {
             $this->initTable($name, $schema);
@@ -51,7 +53,7 @@ class Database
             }
             return $stmt->execute();
         }
-        throw new() \RuntimeException("Error running the query $sql");
+        throw new RuntimeException("Error running the query $sql");
     }
 
     public function select($sql, $stmtProcessor = null, $iterator = null, $col = null)

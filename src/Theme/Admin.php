@@ -3,6 +3,9 @@
 namespace WordpressLib\Theme;
 
 use WordpressLib\Posts\CustomTaxonomy;
+use WP_Post;
+use stdClass;
+use InvalidArgumentException;
 
 class Admin
 {
@@ -114,33 +117,46 @@ class Admin
         });
     }
 
-    public function optionsHTML()
+    protected function wpScreenIdToSlug(string $wpScreenId): string
+    {
+        if (strpos($wpScreenId, "$this->slug-settings") !== false) {
+            return 'dashboard';
+        }
+        if (preg_match("/$this->slug-(.*)-settings$/", $wpScreenId, $matches)) {
+            return $matches[1];
+        }
+        throw new InvalidArgumentException("Admin screen '$wpScreenId' is invalid.");
+    }
+
+    protected function fetchScreenSlug(string $wpScreenId = ''): void
     {
         global $current_screen;
-        if (strpos($current_screen->id, "$this->slug-settings") !== false) {
-            $this->screenSlug = 'dashboard';
-        } elseif (preg_match("/$this->slug-(.*)-settings$/", $current_screen->id, $matches)) {
-            $this->screenSlug = $matches[1];
-        } else {
-            throw new() \InvalidArgumentException("Admin screen '$current_screen->id' is invalid.");
-        }
+        $this->screenSlug = $this->wpScreenIdToSlug($wpScreenId ?: $current_screen->id);
+    }
+
+    public function optionsHTML()
+    {
+        $this->fetchScreenSlug();
         if (!current_user_can(self::DASHBOARD_CAPABILITY/*$this->getCapabilityFromScreen()*/)) {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
         $this->template($this->screenSlug, true);
     }
 
-    public function icon($name, $print = true)
+    public function icon(string $name, bool $print = true): string
     {
-        $html = '';
-        if ($h = fopen($this->pluginDir . "/assets/img/$name.svg", 'r')) {
-            while ($l = fgets($h)) {
-                if (strpos($l, '<?') !== false) {
-                    continue; // skip doctype
-                }                $html .= $l;
-            }
-            fclose($h);
+        $handle = fopen("$this->pluginDir/assets/img/$name.svg", 'r');
+        if (!$handle) {
+            return '';
         }
+        $html = '';
+        while ($line = fgets($handle)) {
+            if (strpos($line, '<?') !== false) {
+                continue; // skip doctype
+            }
+            $html .= $line;
+        }
+        fclose($handle);
         if ($print) {
             echo $html;
         }
@@ -181,7 +197,7 @@ class Admin
             $this->templateVars['embed_url'] = admin_url("$this->screenSlug.php") . '?embedded=true';
             $this->templateVars['post_type'] = $this->getPostTypeFromScreen();
             $this->templateVars['screenTitle'] = $this->templateVars['post_type'] ? $this->templateVars['post_type']->label : __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
-            $this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new() \WP_Post(new() \stdClass);
+            $this->templateVars['p'] = isset($_GET['id']) && intval($_GET['id']) ? get_post($_GET['id']) : new WP_Post(new stdClass());
             $this->templateVars['_tpl'] = function ($dir, $vars = []) {
                 return $this->getTemplateLoader($dir, $vars);
             };
@@ -208,7 +224,7 @@ class Admin
 
         $path = $this->pluginDir . '/templates/' . ($isPartial ? 'partial' : 'content') . '/' . ($isGlobal ? $this->screenSlug : $templateName) . '.php';
         if (!is_readable($path)) {
-            throw new() \InvalidArgumentException("Could not find the template at $templateName.");
+            throw new InvalidArgumentException("Could not find the template at $templateName.");
         }
         include($path);
 

@@ -2,6 +2,8 @@
 
 namespace WordpressLib\Theme;
 
+use RuntimeException;
+
 class Assets
 {
 
@@ -17,7 +19,7 @@ class Assets
         $this->baseDir = $baseDir;
         $this->assetPath = $assetPath;
         if (!is_dir($dir = $this->getDir())) {
-            throw new() \RuntimeException("Asset directory $dir does not exist.");
+            throw new RuntimeException("Asset directory $dir does not exist.");
         }
     }
 
