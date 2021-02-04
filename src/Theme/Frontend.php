@@ -2,6 +2,9 @@
 
 namespace WordpressLib\Theme;
 
+use BadMethodCallException;
+use InvalidArgumentException;
+
 abstract class Frontend
 {
 
@@ -18,7 +21,7 @@ abstract class Frontend
     public static function instance()
     {
         if (!isset(static::$_instance)) {
-            throw new() \BadMethodCallException("Instance must first be created.");
+            throw new BadMethodCallException("Instance must first be created.");
         }
         return static::$_instance;
     }
@@ -64,15 +67,15 @@ abstract class Frontend
     public function getAssetContents(string $path)
     {
         if (strpos($path, './') !== false) {
-            throw new() \InvalidArgumentException("Path must not contain directory dots.");
+            throw new InvalidArgumentException("Path must not contain directory dots.");
         }
         if (strpos($path, '/') === 0) {
-            throw new() \InvalidArgumentException("Path cannot begin with a slash.");
+            throw new InvalidArgumentException("Path cannot begin with a slash.");
         }
 
         $filename = "$this->dir/assets/$path";
         if (!is_readable($filename)) {
-            throw new() \InvalidArgumentException("Could not find the specified file.");
+            throw new InvalidArgumentException("Could not find the specified file.");
         }
 
         return file_get_contents($filename);

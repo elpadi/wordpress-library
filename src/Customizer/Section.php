@@ -7,10 +7,10 @@ use Functional as F;
 class Section
 {
 
-    public function __construct($slug, $title)
+    public function __construct(string $slug, string $title = '')
     {
         $this->slug = $slug;
-        $this->title = $title;
+        $this->title = $title ?: ucwords(str_replace('_', ' ', $slug));
         $this->fields = [];
         $this->repeaters = [];
         add_action('customize_register', [$this, 'register']);
