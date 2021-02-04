@@ -2,6 +2,8 @@
 
 namespace WordpressLib\Customizer;
 
+use WP_Customize_Media_Control;
+
 class Control
 {
 
@@ -45,7 +47,7 @@ class Control
 
     protected function image($wp_customize)
     {
-        $wp_customize->add_control(new() \WP_Customize_Media_Control($wp_customize, $this->slug, [
+        $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, $this->slug, [
             'mime_type' => 'image',
             'section' => $this->sectionSlug,
             'label' => $this->title,
