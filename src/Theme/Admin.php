@@ -18,6 +18,7 @@ use const Functional\…;
 
 class Admin
 {
+    protected $siteTitle = '';
 
     const DASHBOARD_CAPABILITY = 'publish_posts';
 
@@ -55,17 +56,9 @@ class Admin
         return false;
     }
 
-    public function isTomeAdminScreen()
-    {
-        if (strpos($_SERVER['REQUEST_URI'], 'wp-admin/admin.php?page=tome-admin-settings')) {
-            return true;
-        }
-        return preg_match('/wp-admin\/admin\.php\?page=tome-admin(-[a-z]+)-settings/', $_SERVER['REQUEST_URI']);
-    }
-
     public function isThemeScreen()
     {
-        return $this->isTomeAdminScreen() || $this->isEditor();
+        return $this->isEditor();
     }
 
     protected function getBodyClass()
@@ -117,7 +110,7 @@ class Admin
         if (!$postType && !isset($this->screenSlug)) {
             return '';
         }
-        return $postType->label ?? __(ucwords(str_replace('-', ' ', $this->screenSlug)), 'tome');
+        return $postType->label ?? __(ucwords(str_replace('-', ' ', $this->screenSlug)), $this->siteTitle);
     }
 
     public function getScreenFromPostType($post_type)
