@@ -46,8 +46,17 @@ class Admin
         $this->templateVars = array_merge($this->templateVars, $vars);
     }
 
+    public function getEditablePostTypes(): array
+    {
+        return ['post', 'page'];
+    }
+
     public function isEditor()
     {
+        global $post_type;
+        if ($post_type && !in_array($post_type, $this->getEditablePostTypes())) {
+            return false;
+        }
         foreach (['post','post-new'] as $s) {
             if (strpos($_SERVER['REQUEST_URI'], "wp-admin/$s.php") !== false) {
                 return true;
