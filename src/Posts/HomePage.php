@@ -1,13 +1,15 @@
 <?php
+
 namespace WordpressLib\Posts;
 
-class HomePage extends Post {
+class HomePage extends Post
+{
 
-	protected $autoCreate = TRUE;
+    protected $autoCreate = true;
 
-	public function __construct($title, $content) {
-		parent::__construct(intval(get_option('page_on_front')), 'page', $title, '', $content);
-		$this->title = $title;
-	}
-
+    public function __construct($title, $content)
+    {
+        parent::__construct(intval(get_option('page_on_front')), 'page', $title, '', $content);
+        $this->title = $title;
+    }
 }

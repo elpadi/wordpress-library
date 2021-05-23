@@ -1,54 +1,67 @@
 <?php
+
 namespace WordpressLib\Customizer;
 
-class Control {
+use WP_Customize_Media_Control;
 
-	public static function getValue($slug, $type, $optionType) {
-		$value = $optionType == 'theme_mod' ? get_theme_mod($slug) : get_option($slug);
+class Control
+{
 
-		if ($value) switch ($type) {
-			case 'page': return get_post($value);
-			case 'image': return wp_get_attachment_image($value, 'full');
-		}
+    public static function getValue($slug, $type, $optionType)
+    {
+        $value = $optionType == 'theme_mod' ? get_theme_mod($slug) : get_option($slug);
 
-		return $value;
-	}
+        if ($value) {
+            switch ($type) {
+                case 'page':
+                    return get_post($value);
+                case 'image':
+                    return wp_get_attachment_image($value, 'full');
+            }
+        }
 
-	public function __construct($wp_customize, $sectionSlug, $slug, $title, $type, $attrs) {
-		$this->sectionSlug = $sectionSlug;
-		$this->slug = $slug;
-		$this->title = $title;
-		$this->type = $type;
-		$this->attrs = $attrs;
+        return $value;
+    }
 
-		$fn = is_callable([$this, $type]) ? $type : 'add';
-		$this->$fn($wp_customize);
-	}
+    public function __construct($wp_customize, $sectionSlug, $slug, $title, $type, $attrs)
+    {
+        $this->sectionSlug = $sectionSlug;
+        $this->slug = $slug;
+        $this->title = $title;
+        $this->type = $type;
+        $this->attrs = $attrs;
 
-	protected function add($wp_customize) {
-		$wp_customize->add_control($this->slug, [
-			'type' => isset($this->fieldType) ? $this->fieldType : $this->type,
-			'section' => $this->sectionSlug,
-			'label' => $this->title,
-			'input_attrs' => $this->attrs,
-		]);
-	}
+        $fn = is_callable([$this, $type]) ? $type : 'add';
+        $this->$fn($wp_customize);
+    }
 
-	protected function image($wp_customize) {
-		$wp_customize->add_control(new \WP_Customize_Media_Control($wp_customize, $this->slug, [
-			'mime_type' => 'image',
-			'section' => $this->sectionSlug,
-			'label' => $this->title,
-		]));
-	}
+    protected function add($wp_customize)
+    {
+        $wp_customize->add_control($this->slug, [
+            'type' => isset($this->fieldType) ? $this->fieldType : $this->type,
+            'section' => $this->sectionSlug,
+            'label' => $this->title,
+            'input_attrs' => $this->attrs,
+        ]);
+    }
 
-	protected function text($wp_customize) {
-		$this->add($wp_customize);
-	}
+    protected function image($wp_customize)
+    {
+        $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, $this->slug, [
+            'mime_type' => 'image',
+            'section' => $this->sectionSlug,
+            'label' => $this->title,
+        ]));
+    }
 
-	protected function page($wp_customize) {
-		$this->fieldType = 'dropdown-pages';
-		$this->add($wp_customize);
-	}
+    protected function text($wp_customize)
+    {
+        $this->add($wp_customize);
+    }
 
+    protected function page($wp_customize)
+    {
+        $this->fieldType = 'dropdown-pages';
+        $this->add($wp_customize);
+    }
 }

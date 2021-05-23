@@ -1,8 +1,9 @@
 <?php
+
 namespace MustUsePlugin;
 
-interface GridInterface {
+interface GridInterface
+{
 
-	public function subsectionsGrid();
-
+    public function subsectionsGrid();
 }
