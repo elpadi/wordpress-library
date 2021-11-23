@@ -177,4 +177,26 @@ abstract class Frontend
             $this->enqueueLoginScripts($vars);
         }, 100);
     }
+
+    public function replaceImageHost(string $newRemoteHost): void
+    {
+        //wp_get_attachment_image_src (array|false $image, int $attachment_id, string|int[] $size, bool $icon)
+        /*
+        add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
+            if (empty($image)) {
+                return $image;
+            }
+            var_dump(__FILE__ . ":" . __LINE__ . " - " . __METHOD__, $image);
+            exit(0);
+        }, 10, 4);
+         */
+
+        add_filter('the_content', function ($content) use ($newRemoteHost) {
+            return str_replace(
+                home_url(),
+                $newRemoteHost,
+                $content
+            );
+        });
+    }
 }
